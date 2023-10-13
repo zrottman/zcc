@@ -4,6 +4,7 @@
 
 int main(int argc, char** argv) {
 
+    FILE* fp_in;
     char* ext;
 
     // validate argc
@@ -15,13 +16,24 @@ int main(int argc, char** argv) {
     // validate argv extensions
     for(int i=1; i<argc; ++i) {
         ext = mystrrchr(argv[i], '.');
-        if (mystrcmp(ext, ".c") != 0) {
-            printf("Usage: ./zcc <my_file.c>+\n");
+        if (ext == NULL || mystrcmp(ext, ".c") != 0) {
+            printf("Expected .c file, got %s.\n", argv[i]);
             exit(2);
         }
     }
 
-    printf("success\n");
+    // lex each file
+    for(int i=1; i<argc; ++i) {
+        if ((fp_in = fopen(argv[i], "r")) == NULL) {
+            printf("Input file `%s` could not be opened or found.\n", argv[i]);
+            exit(3);
+        }
+        //tokenize(fp_in);
+        fclose(fp_in);
+
+        
+
+    }
 
     return 0;
 }
