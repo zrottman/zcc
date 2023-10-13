@@ -7,7 +7,7 @@
 // Arguments:   s      : input string
 //              target : target char
 // Returns:     Pointer to last location in `s` of `target`
-char* mystrrchr(const char* s, char target) {
+char* mystrrchr(const char* s, const char target) {
     if (s == NULL) {
         return NULL;
     }
