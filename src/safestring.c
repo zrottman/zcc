@@ -43,3 +43,11 @@ int string_set(struct string_t* dest, const char* src) {
     return 0;
 }
 
+int string_appendc(struct string_t* str, const char c) {
+    if (str->len + 1 == str->cap) {
+        return 1; // not enough space
+    }
+    str->buf[str->len++] = c;
+    return 0;
+}
+

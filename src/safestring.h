@@ -13,7 +13,7 @@ struct string_t {
 struct string_t* string_create(size_t capacity);
 int              string_destroy(struct string_t** str);
 int              string_set(struct string_t* dest, const char* src);
-
+int              string_appendc(struct string_t* str, const char c);
 
 #endif // STRING_H
 
