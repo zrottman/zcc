@@ -48,6 +48,7 @@ int string_appendc(struct string_t* str, const char c) {
         return 1; // not enough space
     }
     str->buf[str->len++] = c;
+    str->buf[str->len] = 0;
     return 0;
 }
 
