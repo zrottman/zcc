@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "utils.h"
+#include "lexer.h"
 
 int main(int argc, char** argv) {
 
@@ -29,11 +30,9 @@ int main(int argc, char** argv) {
             printf("Input file `%s` could not be opened or found.\n", argv[i]);
             exit(3);
         }
-        //tokenize(fp_in);
+        printf("Lexing %s...\n", argv[i]);
+        lex(fp_in);
         fclose(fp_in);
-
-        
-
     }
 
     return 0;
