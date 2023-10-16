@@ -9,7 +9,8 @@ int main(int argc, char** argv) {
 
     // validate argc
     if (argc < 2) {
-        printf("Must pass at least one .c filename.\n");
+        printf("Expecting at least one .c filename.\n");
+        printf("Usage: ./zcc <file.c>+\n");
         exit(1);
     }
 
