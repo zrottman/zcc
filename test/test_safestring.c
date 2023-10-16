@@ -122,6 +122,18 @@ void test_string_append_in_invalid_cases(void) {
     string_destroy(&mystr);
 }
 
+void test_string_reset(void) {
+    struct string_t* mystr = string_create(10);
+
+    string_set(mystr, "hello");
+    string_set(mystr, "");
+    string_appendc(mystr, '1');
+
+    TEST_ASSERT_EQUAL_STRING("1", mystr->buf);
+
+    string_destroy(&mystr);
+}
+
 
 int main(void)
 {
@@ -134,6 +146,7 @@ int main(void)
     RUN_TEST(test_string_set_for_strings_greater_than_cap);
     RUN_TEST(test_string_append_in_valid_cases);
     RUN_TEST(test_string_append_in_invalid_cases);
+    RUN_TEST(test_string_reset);
 
     return UNITY_END();
 }
