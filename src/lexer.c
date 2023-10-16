@@ -51,31 +51,37 @@ int lex(FILE* fp) {
         }
 
         // integer literal
-        if ('0' <= c && c <= '9') {
+        if (is_numeric(c)) {
+            tok.type = INT_LITERAL;
             if (string_appendc(tok.val, c) != 0) {
                 // error
             }
-            while ((c = fgetc(fp)) != EOF && '0' <= c && c <= '9') {
+            while ((c = fgetc(fp)) != EOF && is_numeric(c)) {
                 if (string_appendc(tok.val, c) != 0) {
                     // error
                 }
             }
         
         // identifier or keyword
-        } else if (('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z')) {
+        } else if (is_alpha(c)) {
+            tok.type = IDENTIFIER;
             if (string_appendc(tok.val, c) != 0) {
                 // error
             }
-            while ((c = fgetc(fp)) != EOF && !is_whitespace(c)) {
+            while ((c = fgetc(fp)) != EOF && (is_alpha(c) || is_numeric(c))) {
                 if (string_appendc(tok.val, c) != 0) {
                     // error
                 }
             }
 
             // check to see if this is a reserved term
+            if (is_keyword(tok.val->buf)) {
+                tok.type = KEYWORD;
+            }
             
         // opening brace
         } else if (c == '{') {
+            tok.type = BRACE_OPEN;
             if (string_appendc(tok.val, c) != 0) {
                 // error
             }
@@ -83,6 +89,7 @@ int lex(FILE* fp) {
 
         // closing brace
         } else if (c == '}') {
+            tok.type = BRACE_CLOSE;
             if (string_appendc(tok.val, c) != 0) {
                 // error
             }
@@ -90,6 +97,7 @@ int lex(FILE* fp) {
 
         // opening paren
         } else if (c == '(') {
+            tok.type = PAREN_OPEN;
             if (string_appendc(tok.val, c) != 0) {
                 // error
             }
@@ -97,6 +105,7 @@ int lex(FILE* fp) {
 
         // closing paren
         } else if (c == ')') {
+            tok.type = PAREN_CLOSE;
             if (string_appendc(tok.val, c) != 0) {
                 // error
             }
@@ -104,6 +113,7 @@ int lex(FILE* fp) {
 
         // semicolon
         } else if (c == ';') {
+            tok.type = SEMICOLON;
             if (string_appendc(tok.val, c) != 0) {
                 // error
             }
