@@ -4,6 +4,32 @@ bool is_whitespace(const char c) {
     return c == ' ' || c == '\r' || c == '\t' || c == '\n';
 }
 
+bool is_alpha(const char c) {
+    return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
+}
+
+bool is_numeric(const char c) {
+    return '0' <= c && c <= '9';
+}
+
+bool is_keyword(const char* s) {
+    char* keywords[] = { "return", "int" , NULL };
+
+    for (int i=0; keywords[i] != NULL; ++i) {
+        if (strcmp(s, keywords[i]) == 0) {
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
+void display_token(struct token* tok) {
+    printf("token_type: %d\n", tok->type);
+    printf("token_val : %s\n\n", tok->val->buf);
+}
+
 int lex(FILE* fp) {
     char c;
     struct token tok = {.val = string_create(MAX_TOKEN_SIZE) };
@@ -89,7 +115,8 @@ int lex(FILE* fp) {
             return 1;
         }
 
-        printf("token: %s\n", tok.val->buf);
+        //printf("token: %s\n", tok.val->buf);
+        display_token(&tok);
         string_set(tok.val, "");
 
     }
