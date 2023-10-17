@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "utils.h"
-#include "lexer.h"
+#include "parser.h"
 
 int main(int argc, char** argv) {
 
@@ -24,14 +24,16 @@ int main(int argc, char** argv) {
         }
     }
 
-    // lex each file
+    // parse each file
     for(int i=1; i<argc; ++i) {
         if ((fp_in = fopen(argv[i], "r")) == NULL) {
             printf("Input file `%s` could not be opened or found.\n", argv[i]);
             exit(3);
         }
-        printf("Lexing %s...\n", argv[i]);
-        lex(fp_in);
+
+        // parse file
+        parse(fp_in);
+
         fclose(fp_in);
     }
 
