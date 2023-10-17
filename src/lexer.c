@@ -12,22 +12,6 @@ bool is_numeric(const int c) {
     return '0' <= c && c <= '9';
 }
 
-bool is_keyword(const char* s) {
-    char* keywords[] = { "return", "int" , NULL };
-
-    for (int i=0; keywords[i] != NULL; ++i) {
-        if (strcmp(s, keywords[i]) == 0) {
-            return true;
-        }
-    }
-    return false;
-}
-
-void display_token(struct token* tok) {
-    printf("token_type: %d\n", tok->type);
-    printf("token_val : %s\n\n", tok->val->buf);
-}
-
 int next_token(FILE* fp, struct token* tok) {
     int c;
     string_set(tok->val, "");
@@ -47,7 +31,7 @@ int next_token(FILE* fp, struct token* tok) {
 
     // integer literal
     if (is_numeric(c)) {
-        tok->type = INT_LITERAL;
+        tok->type = TOKEN_LITERAL_INT;
         if (string_appendc(tok->val, c) != 0) {
             // error
         }
@@ -60,7 +44,6 @@ int next_token(FILE* fp, struct token* tok) {
     
     // identifier or keyword
     } else if (is_alpha(c)) {
-        tok->type = IDENTIFIER;
         if (string_appendc(tok->val, c) != 0) {
             // error
         }
@@ -71,42 +54,40 @@ int next_token(FILE* fp, struct token* tok) {
         }
 
         // check to see if this is a reserved term
-        if (is_keyword(tok->val->buf)) {
-            tok->type = KEYWORD;
-        }
+        tok->type = get_token_type(tok->val->buf);
         ungetc(c, fp);
         
     // opening brace
     } else if (c == '{') {
-        tok->type = BRACE_OPEN;
+        tok->type = TOKEN_SYMBOL_OPENBRACE;
         if (string_appendc(tok->val, c) != 0) {
             // error
         }
 
     // closing brace
     } else if (c == '}') {
-        tok->type = BRACE_CLOSE;
+        tok->type = TOKEN_SYMBOL_CLOSEBRACE;
         if (string_appendc(tok->val, c) != 0) {
             // error
         }
 
     // opening paren
     } else if (c == '(') {
-        tok->type = PAREN_OPEN;
+        tok->type = TOKEN_SYMBOL_OPENPAREN;
         if (string_appendc(tok->val, c) != 0) {
             // error
         }
 
     // closing paren
     } else if (c == ')') {
-        tok->type = PAREN_CLOSE;
+        tok->type = TOKEN_SYMBOL_CLOSEPAREN;
         if (string_appendc(tok->val, c) != 0) {
             // error
         }
 
     // semicolon
     } else if (c == ';') {
-        tok->type = SEMICOLON;
+        tok->type = TOKEN_SYMBOL_SEMICOLON;
         if (string_appendc(tok->val, c) != 0) {
             // error
         }
