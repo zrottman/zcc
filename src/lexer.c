@@ -1,27 +1,5 @@
 #include "lexer.h"
 
-struct map types[] = {
-    { BRACE_OPEN,  "opening brace" },
-    { BRACE_CLOSE, "closing brace" },
-    { PAREN_OPEN,  "opening paren" },
-    { PAREN_CLOSE, "closing paren" },
-    { SEMICOLON,   "semicolon"     },
-    { KEYWORD,     "keyword"       },
-    { IDENTIFIER,  "identifier"    },
-    { INT_LITERAL, "int literal"   },
-    { UNKNOWN,     NULL            }
-};
-
-struct map lookup(struct map target) {
-    int i;
-    for (i=0; types[i].name != NULL; ++i) {
-        if (target.type == types[i].type) {
-            break;
-        }
-    }
-    return types[i];
-}
-
 bool is_whitespace(const int c) {
     return c == ' ' || c == '\r' || c == '\t' || c == '\n';
 }
