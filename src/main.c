@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "utils.h"
-#include "tokenlist.h"
+#include "token.h"
 #include "lexer.h"
 
 int main(int argc, char** argv) {

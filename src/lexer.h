@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include "utils.h"
 #include "safestring.h"
-#include "tokenlist.h"
+#include "token.h"
 
 #define MAX_TOKEN_SIZE 32
 

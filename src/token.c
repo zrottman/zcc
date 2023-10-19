@@ -23,9 +23,10 @@ struct TokenMap TOKEN_MAP[] = {
 
 };
 
+/* Token functions */
 struct Token* token_create(enum TokenType type, struct SafeString* ss) {
 
-    struct Token *tok = (struct Token*)malloc(sizeof(struct Token));
+    struct Token* tok = (struct Token*)malloc(sizeof(struct Token));
 
     if (!tok) {
         // malloc error
@@ -53,8 +54,8 @@ struct Token* token_create(enum TokenType type, struct SafeString* ss) {
 }
 
 int token_destroy(struct Token** tok) {
-    struct Token *t = *tok;
-    struct Token *next;
+    struct Token* t = *tok;
+    struct Token* next;
 
     while (t != NULL) {
         next = t->next;
@@ -71,14 +72,81 @@ int token_destroy(struct Token** tok) {
     return 0;
 }
 
+void token_display(struct Token* tok) {
+    printf("Token value : %s\n", tok->ss->buf);
+    printf("Token type  : %s\n\n", get_token_name(tok->type));
+}
 
-enum TokenType get_token_type(struct SafeString *ss) {
+
+/* Token List functions */
+struct TokenList* tokenlist_create(void) {
+    struct TokenList* tl = (struct TokenList*)malloc(sizeof(struct TokenList));
+
+    if (!tl) {
+        return NULL; // malloc error
+    }
+
+    tl->head = NULL;
+    tl->tail = NULL;
+    tl->len  = 0;
+
+    return tl;
+}
+
+int tokenlist_destroy(struct TokenList** tl) {
+    struct Token* cur = (*tl)->head;
+
+    token_destroy(&cur);
+
+    (*tl)->head = NULL;
+    (*tl)->tail = NULL;
+    free(*tl);
+
+    *tl = NULL;
+
+    return 0;
+}
+
+int tokenlist_append(struct TokenList* tl, enum TokenType type, struct SafeString* ss) {
+    if (tl == NULL)    { 
+        // invalid tokenlist
+        return 1; 
+    }
+
+    struct Token* tok = token_create(type, ss);
+    if (!tok) {
+        // malloc error
+        return 2;
+    }
+
+    if (tl->head == NULL) {
+        tl->head = tl->tail = tok;
+    } else {
+        tl->tail->next = tok;
+        tl->tail = tl->tail->next;
+    }
+
+    tl->len++;
+
+    return 0;
+}
+
+void tokenlist_display(struct TokenList* tl) {
+    struct Token* cur = tl->head;
+    while (cur) {
+        token_display(cur);
+        cur = cur->next;
+    }
+}
+
+/* TokenMap functions */
+enum TokenType get_token_type(struct SafeString* ss) {
     size_t i;
-    for (i=0; TOKEN_MAP[i].val != NULL; ++i) {
-        if (!TOKEN_MAP[i].match) {
+    for (i=0; TOKEN_MAP[i].description != NULL; ++i) {
+        if (!TOKEN_MAP[i].literal) {
             continue;
         }
-        if (strcmp(TOKEN_MAP[i].match, ss->buf) == 0) {
+        if (strcmp(TOKEN_MAP[i].literal, ss->buf) == 0) {
             return TOKEN_MAP[i].type;
         }
     }
@@ -87,16 +155,11 @@ enum TokenType get_token_type(struct SafeString *ss) {
 
 const char* get_token_name(enum TokenType type) {
     size_t i;
-    for (i=0; TOKEN_MAP[i].val != NULL; ++i) {
+    for (i=0; TOKEN_MAP[i].description != NULL; ++i) {
         if (TOKEN_MAP[i].type == type) {
-            return TOKEN_MAP[i].val;
+            return TOKEN_MAP[i].description;
         }
     }
     return "UNKNOWN";
 
-}
-
-void token_display(struct Token* tok) {
-    printf("Token value : %s\n", tok->ss->buf);
-    printf("Token type  : %s\n\n", get_token_name(tok->type));
 }

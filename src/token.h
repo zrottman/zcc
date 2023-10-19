@@ -36,17 +36,31 @@ struct Token {
     struct Token*      next;
 };
 
-struct TokenMap {
-    enum TokenType     type;
-    char*              match;
-    char*              val;
+struct TokenList {
+    struct Token*      head;
+    struct Token*      tail;
+    size_t             len;
 };
 
-struct Token*   token_create(enum TokenType type, struct SafeString* ss);
-int             token_destroy(struct Token** tok);
+struct TokenMap {
+    enum TokenType     type;
+    char*              literal;
+    char*              description;
+};
 
-enum TokenType  get_token_type(struct SafeString *ss);
-const char*     get_token_name(enum TokenType type);
-void            token_display(struct Token *tok);
+// Token functions
+struct Token*     token_create(enum TokenType type, struct SafeString* ss);
+int               token_destroy(struct Token** tok);
+void              token_display(struct Token* tok);
+
+// TokenList functions
+struct TokenList* tokenlist_create(void);
+int               tokenlist_destroy(struct TokenList** tl);
+int               tokenlist_append(struct TokenList* tl, enum TokenType type, struct SafeString* ss);
+void              tokenlist_display(struct TokenList* tl);
+
+// TokenMap functions
+enum TokenType    get_token_type(struct SafeString* ss);
+const char*       get_token_name(enum TokenType type);
 
 #endif // TOKEN_H
