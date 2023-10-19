@@ -2,11 +2,11 @@
 #define TOKEN_H
 
 #include <stdio.h>
+#include <string.h>
 #include "safestring.h"
 
-#define MAX_TOKEN_SIZE 32
 
-enum token_type { 
+enum TokenType { 
     TOKEN_NONE,
 
     // Symbols
@@ -30,18 +30,23 @@ enum token_type {
     TOKEN_END
 };
 
-struct token {
-    struct string_t* val;
-    enum token_type  type;
+struct Token {
+    struct SafeString* ss;
+    enum TokenType     type;
+    struct Token*      next;
 };
 
-struct token_map {
-    enum token_type  type;
-    char*            val;
+struct TokenMap {
+    enum TokenType     type;
+    char*              match;
+    char*              val;
 };
 
-enum token_type get_token_type(char* s);
-const char*     get_token_name(enum token_type type);
-void            display_token(struct token *tok);
+struct Token*   token_create(enum TokenType type, struct SafeString* ss);
+int             token_destroy(struct Token** tok);
+
+enum TokenType  get_token_type(struct SafeString *ss);
+const char*     get_token_name(enum TokenType type);
+void            token_display(struct Token *tok);
 
 #endif // TOKEN_H

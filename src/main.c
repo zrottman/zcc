@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "utils.h"
-#include "parser.h"
+#include "tokenlist.h"
+#include "lexer.h"
 
 int main(int argc, char** argv) {
 
     FILE* fp_in;
     char* ext;
+
+    struct TokenList* tokens;
+    // struct ast_t* AST = ast;
 
     // validate argc
     if (argc < 2) {
@@ -31,8 +35,30 @@ int main(int argc, char** argv) {
             exit(3);
         }
 
-        // parse file
-        parse(fp_in);
+        
+        // Step 1: Lex
+        printf("\nLexing %s\n", argv[i]);
+        tokens = tokenlist_create(); // malloc tokens linked list
+
+        if (lex(fp_in, tokens) != 0) {
+            // lexing error
+            tokenlist_destroy(&tokens);
+            fclose(fp_in);
+            exit(4);
+        }
+
+        tokenlist_display(tokens);  // display tokens linked list
+        tokenlist_destroy(&tokens); // destroy tokens linked list
+        
+
+        // Step 2: Parse
+        //printf("Parsing %s\n", argv[i]);
+        // takes token linked list head and returns AST
+
+
+        // Step 3: Write
+        //printf("Writing %s\n", argv[i]);
+        // takes AST and out file
 
         fclose(fp_in);
     }

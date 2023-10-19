@@ -4,16 +4,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct string_t {
+struct SafeString {
     char*  buf;
-    size_t len;
-    size_t cap;
+    size_t len; // does not include null byte
+    size_t cap; // includes null byte
 };
 
-struct string_t* string_create(size_t capacity);
-int              string_destroy(struct string_t** str);
-int              string_set(struct string_t* dest, const char* src);
-int              string_appendc(struct string_t* str, const char c);
+struct SafeString* safestring_create(size_t capacity);
+int                safestring_destroy(struct SafeString** ss);
+
+int                safestring_set(struct SafeString* dest, const char* src);
+int                safestring_appendc(struct SafeString* ss, const char c);
 
 #endif // STRING_H
 
