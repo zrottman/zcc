@@ -1,7 +1,7 @@
 #include "lexer.h"
 
 struct TokenList* lex(FILE* fp) {
-    char c;
+    signed char c;
     struct SafeString* cur_tok = safestring_create(MAX_TOKEN_SIZE);
     struct TokenList* tokenlist = tokenlist_create();
 
