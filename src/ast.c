@@ -78,7 +78,6 @@ void astnode_display(struct ASTNode* node, size_t indent) {
         return;
     }
     int i;
-    struct ASTNode* cur = node;
 
     // print self
     for (i=0; i<indent; ++i) {
