@@ -10,7 +10,7 @@ PATHT = test/
 OUTFILE = zcc
 BUILD_PATHS = $(PATHB) $(PATHO) $(PATHR)
 
-COMPILE = cc -c
+COMPILE = cc -c -Wall
 LINK = cc
 
 SRC = $(wildcard $(PATHS)*.c)  # src/main.c src/parser.c ...
