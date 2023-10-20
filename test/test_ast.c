@@ -86,9 +86,6 @@ void test_astnode_append_children(void) {
 }
 
 void test_astnode_append_children_and_siblings(void) {
-    struct ASTNode* root = NULL;
-    struct SafeString* ss = NULL;
-
 
 }
 
