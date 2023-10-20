@@ -9,7 +9,7 @@
 
 #define MAX_TOKEN_SIZE 32
 
-int  lex(FILE* fp, struct TokenList* tokenlist);
+struct TokenList* lex(FILE* fp);
 
 bool is_whitespace(const int c);
 bool is_alpha(const int c);

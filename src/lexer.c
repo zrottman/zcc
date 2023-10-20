@@ -1,8 +1,10 @@
 #include "lexer.h"
 
-int lex(FILE* fp, struct TokenList* tokenlist) {
+struct TokenList* lex(FILE* fp) {
     char c;
     struct SafeString* cur_tok = safestring_create(MAX_TOKEN_SIZE);
+    struct TokenList* tokenlist = tokenlist_create();
+
     
     c = fgetc(fp);
     while (1) {
@@ -32,7 +34,9 @@ int lex(FILE* fp, struct TokenList* tokenlist) {
             }
 
             if (tokenlist_append(tokenlist, TOKEN_LITERAL_INT, cur_tok) != 0) {
-                return 1;
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
             }
             continue;
         }
@@ -47,11 +51,10 @@ int lex(FILE* fp, struct TokenList* tokenlist) {
                     // error
                 }
             }
-
-            // TODO: check to see if this is a reserved term
-            //tok->type = get_token_type(cur_tok->buf);
             if (tokenlist_append(tokenlist, get_token_type(cur_tok), cur_tok) != 0) {
-                return 1;
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
             }
             continue;
         }
@@ -62,7 +65,9 @@ int lex(FILE* fp, struct TokenList* tokenlist) {
                 // error
             }
             if (tokenlist_append(tokenlist, TOKEN_SYMBOL_OPENBRACE, cur_tok) != 0) {
-                return 1;
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
             }
             c = fgetc(fp);
             continue;
@@ -74,7 +79,9 @@ int lex(FILE* fp, struct TokenList* tokenlist) {
                 // error
             }
             if (tokenlist_append(tokenlist, TOKEN_SYMBOL_CLOSEBRACE, cur_tok) != 0) {
-                return 1;
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
             }
             c = fgetc(fp);
             continue;
@@ -86,7 +93,9 @@ int lex(FILE* fp, struct TokenList* tokenlist) {
                 // error
             }
             if (tokenlist_append(tokenlist, TOKEN_SYMBOL_OPENPAREN, cur_tok) != 0) {
-                return 1;
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
             }
             c = fgetc(fp);
             continue;
@@ -98,7 +107,9 @@ int lex(FILE* fp, struct TokenList* tokenlist) {
                 // error
             }
             if (tokenlist_append(tokenlist, TOKEN_SYMBOL_CLOSEPAREN, cur_tok) != 0) {
-                return 1;
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
             }
             c = fgetc(fp);
             continue;
@@ -110,7 +121,9 @@ int lex(FILE* fp, struct TokenList* tokenlist) {
                 // error
             }
             if (tokenlist_append(tokenlist, TOKEN_SYMBOL_SEMICOLON, cur_tok) != 0) {
-                return 1;
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
             }
             c = fgetc(fp);
             continue;
@@ -118,12 +131,14 @@ int lex(FILE* fp, struct TokenList* tokenlist) {
         
         // error
         printf("No token matching pattern `%c`.\n", c);
-        return 1;
+        safestring_destroy(&cur_tok);
+        tokenlist_destroy(&tokenlist);
+        return NULL;
     }
 
     safestring_destroy(&cur_tok);
 
-    return 0;
+    return tokenlist;
 }
 
 bool is_whitespace(const int c) {

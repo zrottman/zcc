@@ -41,13 +41,13 @@ int main(int argc, char** argv) {
         printf("\nLexing %s...\n", argv[i]);
         tokens = tokenlist_create(); // malloc tokens linked list
 
-        if (lex(fp_in, tokens) != 0) {
+        if (!(tokens = lex(fp_in))) {
             // lexing error
-            tokenlist_destroy(&tokens);
             fclose(fp_in);
             exit(4);
         }
 
+        fclose(fp_in);
         printf("Done.\n");
         //tokenlist_display(tokens);  // display tokens linked list
 
@@ -58,15 +58,14 @@ int main(int argc, char** argv) {
         if (!(ast = parse(tokens))) {
             // parsing error
             tokenlist_destroy(&tokens);
-            fclose(fp_in);
             exit(5);
         }
         tokenlist_destroy(&tokens); // destroy tokens linked list
         printf("Done.\n");
 
+        printf("\nAST\n");
         astnode_display(ast, 0);    // display AST
 
-        print("\nAST\n");
         astnode_destroy(&ast);      // destroy ast
         
 
@@ -76,7 +75,6 @@ int main(int argc, char** argv) {
         //printf("Writing %s...\n", argv[i]);
         // takes AST and out file
 
-        fclose(fp_in);
     }
 
     return 0;
