@@ -57,3 +57,17 @@ int safestring_appendc(struct SafeString* ss, const char c) {
     return 0;
 }
 
+int safestring_append(struct SafeString* ss, const char* s) {
+    // ensure there's enough room
+    size_t s_len = strlen(s);
+    if (ss->len + s_len >= ss->cap) {
+        return 1; // not enough space
+    }
+    for (int i=0; i<s_len; ++i) {
+        if (safestring_appendc(ss, s[i]) != 0) {
+            return 2; // error
+        }
+    }
+    return 0;
+}
+

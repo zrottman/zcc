@@ -15,6 +15,7 @@ int                safestring_destroy(struct SafeString** ss);
 
 int                safestring_set(struct SafeString* dest, const char* src);
 int                safestring_appendc(struct SafeString* ss, const char c);
+int                safestring_append(struct SafeString* ss, const char* s);
 
 #endif // STRING_H
 

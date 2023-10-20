@@ -135,6 +135,55 @@ void test_safestring_reset(void) {
     safestring_destroy(&ss);
 }
 
+void test_safestring_append_for_valid_strings(void) {
+    struct SafeString* ss = safestring_create(20);
+    size_t err = 0;
+
+    TEST_ASSERT_NOT_NULL(ss);
+    TEST_ASSERT_EQUAL(0, ss->len);
+    TEST_ASSERT_EQUAL(20, ss->cap);
+    TEST_ASSERT_EQUAL_STRING("", ss->buf);
+
+    err = safestring_set(ss, "hello");
+    TEST_ASSERT_EQUAL(0, err);
+    TEST_ASSERT_EQUAL(5, ss->len);
+    TEST_ASSERT_EQUAL(20, ss->cap);
+    TEST_ASSERT_EQUAL_STRING("hello", ss->buf);
+
+    err = safestring_append(ss, ", world");
+    TEST_ASSERT_EQUAL(0, err);
+    TEST_ASSERT_EQUAL(12, ss->len);
+    TEST_ASSERT_EQUAL(20, ss->cap);
+    TEST_ASSERT_EQUAL_STRING("hello, world", ss->buf);
+
+    safestring_destroy(&ss);
+    TEST_ASSERT_NULL(ss);
+}
+
+void test_safestring_append_for_invalid_strings(void) {
+    struct SafeString* ss = safestring_create(10);
+    size_t err = 0;
+
+    TEST_ASSERT_NOT_NULL(ss);
+    TEST_ASSERT_EQUAL(0, ss->len);
+    TEST_ASSERT_EQUAL(10, ss->cap);
+    TEST_ASSERT_EQUAL_STRING("", ss->buf);
+
+    err = safestring_set(ss, "hello");
+    TEST_ASSERT_EQUAL(0, err);
+    TEST_ASSERT_EQUAL(5, ss->len);
+    TEST_ASSERT_EQUAL(10, ss->cap);
+    TEST_ASSERT_EQUAL_STRING("hello", ss->buf);
+
+    err = safestring_append(ss, ", world");
+    TEST_ASSERT_EQUAL(1, err);
+    TEST_ASSERT_EQUAL(5, ss->len);
+    TEST_ASSERT_EQUAL(10, ss->cap);
+    TEST_ASSERT_EQUAL_STRING("hello", ss->buf);
+
+    safestring_destroy(&ss);
+    TEST_ASSERT_NULL(ss);
+}
 
 int main(void)
 {
@@ -148,6 +197,9 @@ int main(void)
     RUN_TEST(test_safestring_append_in_valid_cases);
     RUN_TEST(test_safestring_append_in_invalid_cases);
     RUN_TEST(test_safestring_reset);
+
+    RUN_TEST(test_safestring_append_for_valid_strings);
+    RUN_TEST(test_safestring_append_for_invalid_strings);
 
     return UNITY_END();
 }
