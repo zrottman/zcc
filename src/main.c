@@ -39,7 +39,6 @@ int main(int argc, char** argv) {
         
         // Step 1: Lex
         printf("\nLexing %s...\n", argv[i]);
-        tokens = tokenlist_create(); // malloc tokens linked list
 
         if (!(tokens = lex(fp_in))) {
             // lexing error
