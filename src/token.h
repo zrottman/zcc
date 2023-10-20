@@ -39,6 +39,7 @@ struct Token {
 struct TokenList {
     struct Token*      head;
     struct Token*      tail;
+    struct Token*      p;      // pointer to current token, for use by parser
     size_t             len;
 };
 

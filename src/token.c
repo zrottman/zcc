@@ -88,6 +88,7 @@ struct TokenList* tokenlist_create(void) {
 
     tl->head = NULL;
     tl->tail = NULL;
+    tl->p    = NULL;
     tl->len  = 0;
 
     return tl;
@@ -100,6 +101,7 @@ int tokenlist_destroy(struct TokenList** tl) {
 
     (*tl)->head = NULL;
     (*tl)->tail = NULL;
+    (*tl)->p    = NULL;
     free(*tl);
 
     *tl = NULL;

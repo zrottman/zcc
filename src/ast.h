@@ -4,39 +4,26 @@
 #include <stdio.h>
 #include "safestring.h"
 
+#define MAX_NODE_LENGTH 32
+
 enum ASTNodeType {
     PROGRAM,
-    FUNCTION_DECL,
+    FUNCTION_DEC,
     STATEMENT,
-    EXP
+    EXPRESSION
 };
 
 struct ASTNode {
     enum ASTNodeType    type;
     struct SafeString*  ss;
-    //struct ASTNodeList* children;
     struct ASTNode*     children;  // points to first child
     struct ASTNode*     next;      // points to next sibling
 };
 
-/*
-struct ASTNodeList {
-    struct ASTNode* head;
-    struct ASTNode* tail;
-    size_t          len;
-};
-*/
-
-struct ASTNode* astnode_create(enum ASTNodeType, struct SafeString* ss);
+struct ASTNode* astnode_create(enum ASTNodeType, char* name);
 int             astnode_destroy(struct ASTNode** n);
-int             astnode_append_child(struct ASTNode* parent, enum ASTNodeType type, struct SafeString* ss);
-int             astnode_append_sibling(struct ASTNode* node, enum ASTNodeType type, struct SafeString* ss);
-void astnode_display(struct ASTNode* node, size_t indent);
+int             astnode_append_child(struct ASTNode* parent, struct ASTNode* child);
+int             astnode_append_sibling(struct ASTNode* node, struct ASTNode* sibling);
+void            astnode_display(struct ASTNode* node, size_t indent);
 
-/*
-struct ASTNodeList* astnodelist_create(void);
-int                 astnodelist_destroy(struct ASTNodeList** nl);
-int                 astnodelist_append_child(struct ASTNodeList* nl, enum ASTNodeType type, struct SafeString* ss);
-
-*/
 #endif // AST_H

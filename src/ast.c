@@ -3,30 +3,23 @@
 // TODO:
 // have append functions return pointer to appended node, which may come in handy down the road
 
-struct ASTNode* astnode_create(enum ASTNodeType type, struct SafeString* ss) {
+struct ASTNode* astnode_create(enum ASTNodeType type, char* name) {
 
     struct ASTNode* node = (struct ASTNode*)malloc(sizeof(struct ASTNode));
     if (!node) {
         return NULL; // malloc error
     }
 
-    if (ss->len == 0) {
-        free(node);
-        return NULL; // invalid safestring
-    }
-
-    node->ss = safestring_create(ss->len+1);
-    if (safestring_set(node->ss, ss->buf) != 0) {
+    node->ss = safestring_create(MAX_NODE_LENGTH);
+    if (safestring_set(node->ss, name) != 0) {
         // error
         safestring_destroy(&(node->ss));
         free(node);
         return NULL;
     }
 
-    //node->children = astnodelist_create();
     node->children = NULL;
     node->next     = NULL;
-
 
     node->type     = type;
 
@@ -56,28 +49,26 @@ int astnode_destroy(struct ASTNode** n) {
     return 0;
 }
 
-int astnode_append_child(struct ASTNode* parent, enum ASTNodeType type, struct SafeString* ss) {
+int astnode_append_child(struct ASTNode* parent, struct ASTNode* child) {
 
     // if parent already has children, append
     if (parent->children) {
-        astnode_append_sibling(parent->children, type, ss);
+        astnode_append_sibling(parent->children, child);
         return 0;
     }
 
-    // otherwise malloc new child here
-    struct ASTNode* newchild = astnode_create(type, ss);
-    parent->children = newchild;
+    // otherwise add child
+    parent->children = child;
     return 0;
 }
 
-int astnode_append_sibling(struct ASTNode* node, enum ASTNodeType type, struct SafeString* ss) {
-    struct ASTNode* new_sib = astnode_create(type, ss);
+int astnode_append_sibling(struct ASTNode* node, struct ASTNode* sibling) {
 
     while (node->next) {
         node = node->next;
     }
 
-    node->next = new_sib;
+    node->next = sibling;
 
     return 0;
 }
@@ -109,36 +100,3 @@ void astnode_display(struct ASTNode* node, size_t indent) {
     
 }
 
-/*
-struct ASTNodeList* astnodelist_create(void) {
-    struct ASTNodeList* nl = (struct ASTNodeList*)malloc(sizeof(struct ASTNodeList));
-    if (!nl) {
-        return NULL; // malloc error
-    }
-
-    nl->head = NULL;
-    nl->tail = NULL;
-    nl->len  = 0;
-
-    return nl;
-}
-
-int astnodelist_destroy(struct ASTNodeList** nl) {
-    struct ASTNode* cur = (*nl)->head;
-    struct ASTNode* next;
-
-    while (cur) {
-        next = cur->next;
-
-        astnode_destroy(&cur);
-        cur->next;
-    }
-
-
-    return 0;
-}
-
-int astnodelist_append_child(struct ASTNodeList* nl, enum ASTNodeType type, struct SafeString* ss) {
-    return 0;
-}
-*/

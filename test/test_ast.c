@@ -11,25 +11,18 @@ void tearDown(void)
 
 void test_astnode_create_and_destroy(void) {
     struct ASTNode* node  = NULL;
-    struct SafeString *ss = NULL;
 
-    ss = safestring_create(32);
-    safestring_set(ss, "my identifier");
+    node = astnode_create(PROGRAM, "hello, world");
 
-    node = astnode_create(PROGRAM, ss);
-
-    // destroy safestring
-    safestring_destroy(&ss);
-    TEST_ASSERT_NULL(ss);
-    
     // test node
     TEST_ASSERT_NOT_NULL(node);
     TEST_ASSERT_EQUAL(PROGRAM, node->type);
     TEST_ASSERT_NULL(node->children);
     TEST_ASSERT_NULL(node->next);
-    TEST_ASSERT_EQUAL(13, node->ss->len);
-    TEST_ASSERT_EQUAL(14, node->ss->cap);
-    TEST_ASSERT_EQUAL_STRING("my identifier", node->ss->buf);
+    TEST_ASSERT_NOT_NULL(node->ss);
+    TEST_ASSERT_EQUAL(12, node->ss->len);
+    TEST_ASSERT_EQUAL(MAX_NODE_LENGTH, node->ss->cap);
+    TEST_ASSERT_EQUAL_STRING("hello, world", node->ss->buf);
 
     // destroy node
     astnode_destroy(&node);
@@ -37,23 +30,18 @@ void test_astnode_create_and_destroy(void) {
 }
 
 void test_astnode_append_siblings(void) {
-    struct ASTNode* child = NULL;
-    struct SafeString* ss = NULL;
+    struct ASTNode* child   = NULL;
+    struct ASTNode* sibling = NULL;
 
     char* names[] = {"sib1", "sib2", "sib3", "sib4"};
     size_t sibs = 4;
 
-    ss = safestring_create(32);
-    safestring_set(ss, "child");
-    child = astnode_create(PROGRAM, ss);
+    child = astnode_create(PROGRAM, "child");
 
     for (int i=0; i<sibs; ++i) {
-        safestring_set(ss, names[i]);
-        astnode_append_sibling(child, PROGRAM, ss);
+        sibling = astnode_create(PROGRAM, names[i]);
+        astnode_append_sibling(child, sibling);
     }
-
-    safestring_destroy(&ss);
-    TEST_ASSERT_NULL(ss);
 
     //astnode_display(child, 0);
 
@@ -62,39 +50,34 @@ void test_astnode_append_siblings(void) {
 }
 
 void test_astnode_append_children(void) {
-    struct ASTNode* root = NULL;
-    struct SafeString* ss = NULL;
+    struct ASTNode* root  = NULL;
+    struct ASTNode* child = NULL;
 
-    char* gen1[]   = { "A", "B", "C", "D" };
+    char*  gen1[] = { "A", "B", "C", "D" };
     size_t gen1_s = 4;
 
-    char* gen2[]   = { "D", "E", "F" };
-    size_t gen2_s  = 3;
+    char*  gen2[] = { "D", "E", "F" };
+    size_t gen2_s = 3;
 
-    char* gen3[]   = { "G" , "H" };
-    size_t gen3_s    = 2;
+    char*  gen3[] = { "G" , "H" };
+    size_t gen3_s = 2;
 
 
-    ss = safestring_create(32);
-    safestring_set(ss, "root");
-    root = astnode_create(PROGRAM, ss);
+    root = astnode_create(PROGRAM, "root");
     for (int i=0; i<gen1_s; ++i) {
-        safestring_set(ss, gen1[i]);
-        astnode_append_child(root, PROGRAM, ss);
+        child = astnode_create(PROGRAM, gen1[i]);
+        astnode_append_child(root, child);
     }
 
     for (int i=0; i<gen2_s; ++i ) {
-        safestring_set(ss, gen2[i]);
-        astnode_append_child(root->children, PROGRAM, ss);
+        child = astnode_create(PROGRAM, gen2[i]);
+        astnode_append_child(root->children, child);
     }
 
     for (int i=0; i<gen3_s; ++i ) {
-        safestring_set(ss, gen3[i]);
-        astnode_append_child(root->children->next, PROGRAM, ss);
+        child = astnode_create(PROGRAM, gen3[i]);
+        astnode_append_child(root->children->next, child);
     }
-
-    safestring_destroy(&ss);
-    TEST_ASSERT_NULL(ss);
 
     astnode_display(root, 0);
 
@@ -102,7 +85,7 @@ void test_astnode_append_children(void) {
     TEST_ASSERT_NULL(root);
 }
 
-void test_astnode_append_children_and_siblines(void) {
+void test_astnode_append_children_and_siblings(void) {
     struct ASTNode* root = NULL;
     struct SafeString* ss = NULL;
 

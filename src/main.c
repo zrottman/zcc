@@ -3,14 +3,15 @@
 #include "utils.h"
 #include "token.h"
 #include "lexer.h"
+#include "parser.h"
 
 int main(int argc, char** argv) {
 
     FILE* fp_in;
     char* ext;
 
-    struct TokenList* tokens;
-    // struct ast_t* AST = ast;
+    struct TokenList* tokens = NULL;
+    struct ASTNode*   ast    = NULL;
 
     // validate argc
     if (argc < 2) {
@@ -37,7 +38,7 @@ int main(int argc, char** argv) {
 
         
         // Step 1: Lex
-        printf("\nLexing %s\n", argv[i]);
+        printf("\nLexing %s...\n", argv[i]);
         tokens = tokenlist_create(); // malloc tokens linked list
 
         if (lex(fp_in, tokens) != 0) {
@@ -47,17 +48,32 @@ int main(int argc, char** argv) {
             exit(4);
         }
 
-        tokenlist_display(tokens);  // display tokens linked list
-        tokenlist_destroy(&tokens); // destroy tokens linked list
-        
+        printf("Done.\n");
+        //tokenlist_display(tokens);  // display tokens linked list
+
 
         // Step 2: Parse
-        //printf("Parsing %s\n", argv[i]);
-        // takes token linked list head and returns AST
+        printf("Parsing %s...\n", argv[i]);
+
+        if (!(ast = parse(tokens))) {
+            // parsing error
+            tokenlist_destroy(&tokens);
+            fclose(fp_in);
+            exit(5);
+        }
+        tokenlist_destroy(&tokens); // destroy tokens linked list
+        printf("Done.\n");
+
+        astnode_display(ast, 0);    // display AST
+
+        print("\nAST\n");
+        astnode_destroy(&ast);      // destroy ast
+        
+
 
 
         // Step 3: Write
-        //printf("Writing %s\n", argv[i]);
+        //printf("Writing %s...\n", argv[i]);
         // takes AST and out file
 
         fclose(fp_in);
