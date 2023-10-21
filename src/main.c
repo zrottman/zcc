@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
         }
         
         // Step 1: Lex
-        printf("\nLexing %s...\n", argv[i]);
+        printf("Lexing %s...  ", argv[i]);
 
         if (!(tokens = lex(fp_in))) {
             // lexing error
@@ -47,11 +47,11 @@ int main(int argc, char** argv) {
         }
 
         fclose(fp_in);
-        printf("Done.\n");
+        printf("done.\n");
         //tokenlist_display(tokens);  // display tokens linked list
 
         // Step 2: Parse
-        printf("Parsing %s...\n", argv[i]);
+        printf("Parsing %s... ", argv[i]);
 
         if (!(ast = parse(tokens))) {
             // parsing error
@@ -59,18 +59,19 @@ int main(int argc, char** argv) {
             exit(5);
         }
         tokenlist_destroy(&tokens); // destroy tokens linked list
-        printf("Done.\n");
+        printf("done.\n");
 
-        printf("\nAST\n");
-        astnode_display(ast, 0);    // display AST
 
         // Step 3: Write
-        printf("Writing %s...\n", argv[i]);
+        printf("Writing %s... ", argv[i]);
         generate(ast, argv[i]);
-        printf("Done\n");
+        printf("done\n");
+
+
+        //printf("\nAST\n");
+        //astnode_display(ast, 0);    // display AST
 
         astnode_destroy(&ast);      // destroy ast
-
     }
 
     return 0;
