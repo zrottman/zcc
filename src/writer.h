@@ -9,6 +9,7 @@
 #define MAX_FILENAME_LENGTH 64
 
 void               generate(struct ASTNode* root, char* file_in);
+void               generate_inner(struct ASTNode* root, FILE* fp);
 struct SafeString* make_filename(char* file_in);
 
 #endif // WRITER_H

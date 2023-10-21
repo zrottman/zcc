@@ -8,9 +8,38 @@ void generate(struct ASTNode* root, char* file_in) {
     fp = fopen(file_out->buf, "w");
     safestring_destroy(&file_out);
 
-    fputs("hello world", fp);
-    
+    generate_inner(root, fp);
+
     fclose(fp);
+    return;
+}
+
+void generate_inner(struct ASTNode* node, FILE* fp) {
+    if (!node) {
+        return;
+    }
+
+    switch (node->type) {
+        case PROGRAM:
+            generate_inner(node->children, fp);
+            break;
+        case FUNCTION_DEC:
+            // emit_function_prologue
+            fprintf(fp, ".globl _%s\n", node->ss->buf);
+            fprintf(fp, "_%s:\n", node->ss->buf);
+            generate_inner(node->children, fp);
+            break;
+        case STATEMENT:
+            generate_inner(node->children, fp);
+            // emit return
+            fprintf(fp, "ret\n");
+            break;
+        case EXPRESSION:
+            fprintf(fp, "movl\t$%s, %%eax\n", node->ss->buf);
+            break;
+    }
+
+    generate_inner(node->next, fp);
 }
 
 struct SafeString* make_filename(char* file_in) {
