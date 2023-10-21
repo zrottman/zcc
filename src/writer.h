@@ -10,6 +10,8 @@
 
 void               generate(struct ASTNode* root, char* file_in);
 void               generate_inner(struct ASTNode* root, FILE* fp);
+void               emit_function_prologue(struct ASTNode* node, FILE* fp);
+void               emit_return(FILE* fp);
 struct SafeString* make_filename(char* file_in);
 
 #endif // WRITER_H

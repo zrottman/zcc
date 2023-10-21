@@ -24,15 +24,13 @@ void generate_inner(struct ASTNode* node, FILE* fp) {
             generate_inner(node->children, fp);
             break;
         case FUNCTION_DEC:
-            // emit_function_prologue
-            fprintf(fp, ".globl _%s\n", node->ss->buf);
-            fprintf(fp, "_%s:\n", node->ss->buf);
+            emit_function_prologue(node, fp);
             generate_inner(node->children, fp);
+            // emit function epilogue?
             break;
         case STATEMENT:
             generate_inner(node->children, fp);
-            // emit return
-            fprintf(fp, "ret\n");
+            emit_return(fp);
             break;
         case EXPRESSION:
             fprintf(fp, "movl\t$%s, %%eax\n", node->ss->buf);
@@ -40,6 +38,17 @@ void generate_inner(struct ASTNode* node, FILE* fp) {
     }
 
     generate_inner(node->next, fp);
+}
+
+void emit_function_prologue(struct ASTNode* node, FILE* fp) {
+    fprintf(fp, ".globl _%s\n", node->ss->buf);
+    fprintf(fp, "_%s:\n", node->ss->buf);
+    return;
+}
+
+void emit_return(FILE* fp) {
+    fprintf(fp, "ret\n");
+    return;
 }
 
 struct SafeString* make_filename(char* file_in) {
