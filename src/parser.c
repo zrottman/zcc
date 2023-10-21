@@ -21,6 +21,9 @@ struct Token* eat(struct TokenList *tokens, enum TokenType expected) {
 }
 
 struct ASTNode* parse(struct TokenList* tokens) {
+    /*
+     * <program> ::= <function>
+     */
 
     struct ASTNode* program_node  = NULL;
     struct ASTNode* function_node = NULL;
@@ -36,6 +39,9 @@ struct ASTNode* parse(struct TokenList* tokens) {
 }
 
 struct ASTNode* parse_function(struct TokenList* tokens) {
+    /* 
+     * <function> ::= "int" <id> "(" ")" "{" "}" <statement> "}"
+     */
 
     struct ASTNode* function_node  = NULL;
     struct ASTNode* statement_node = NULL;
@@ -56,13 +62,33 @@ struct ASTNode* parse_function(struct TokenList* tokens) {
 }
 
 struct ASTNode* parse_statement(struct TokenList* tokens) {
+    /*
+     * <statement> ::= "return" <exp> ";"
+     */
+
+    struct ASTNode* statement_node  = NULL;
+    struct ASTNode* expression_node = NULL;
+    struct Token*   tok             = NULL;
+
+    if (!(tok = eat(tokens, TOKEN_KEYWORD_RETURN)))    { return NULL; }
+    if (!(expression_node = parse_expression(tokens))) { return NULL; }
+    if (!(eat(tokens, TOKEN_SYMBOL_SEMICOLON)))  { return NULL; }
+
+    statement_node = astnode_create(STATEMENT, tok->ss->buf);
+    astnode_append_child(statement_node, expression_node);
+
+    return statement_node;
+}
+
+struct ASTNode* parse_expression(struct TokenList* tokens) {
+    /*
+     * <exp> ::= <int>
+     */
 
     struct ASTNode* expression_node = NULL;
     struct Token*   tok             = NULL;
 
-    if (!(eat(tokens, TOKEN_KEYWORD_RETURN)))    { return NULL; }
     if (!(tok = eat(tokens, TOKEN_LITERAL_INT))) { return NULL; }
-    if (!(eat(tokens, TOKEN_SYMBOL_SEMICOLON)))  { return NULL; }
 
     expression_node = astnode_create(EXPRESSION, tok->ss->buf);
 
