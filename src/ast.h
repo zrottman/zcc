@@ -24,6 +24,6 @@ struct ASTNode* astnode_create(enum ASTNodeType, char* name);
 int             astnode_destroy(struct ASTNode** n);
 int             astnode_append_child(struct ASTNode* parent, struct ASTNode* child);
 int             astnode_append_sibling(struct ASTNode* node, struct ASTNode* sibling);
-void            astnode_display(struct ASTNode* node, size_t indent);
+void            astnode_pretty_print(struct ASTNode* node, size_t indent);
 
 #endif // AST_H

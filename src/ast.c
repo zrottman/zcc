@@ -73,7 +73,7 @@ int astnode_append_sibling(struct ASTNode* node, struct ASTNode* sibling) {
     return 0;
 }
 
-void astnode_display(struct ASTNode* node, size_t indent) {
+void astnode_pretty_print(struct ASTNode* node, size_t indent) {
     if (!node) {
         return;
     }
@@ -87,12 +87,12 @@ void astnode_display(struct ASTNode* node, size_t indent) {
 
     // print children
     if (node->children) {
-        astnode_display(node->children, indent + 2);
+        adtnode_pretty_print(node->children, indent + 2);
     }
 
     // print sibs
     if (node->next) {
-        astnode_display(node->next, indent);
+        adtnode_pretty_print(node->next, indent);
     }
 
 

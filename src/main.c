@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 
 
         //printf("\nAST\n");
-        //astnode_display(ast, 0);    // display AST
+        //astnode_pretty_print(ast, 0);    // pretty print AST
 
         astnode_destroy(&ast);      // destroy ast
     }
