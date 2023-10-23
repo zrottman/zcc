@@ -87,12 +87,12 @@ void astnode_pretty_print(struct ASTNode* node, size_t indent) {
 
     // print children
     if (node->children) {
-        adtnode_pretty_print(node->children, indent + 2);
+        astnode_pretty_print(node->children, indent + 2);
     }
 
     // print sibs
     if (node->next) {
-        adtnode_pretty_print(node->next, indent);
+        astnode_pretty_print(node->next, indent);
     }
 
 
