@@ -43,7 +43,7 @@ void test_astnode_append_siblings(void) {
         astnode_append_sibling(child, sibling);
     }
 
-    //astnode_display(child, 0);
+    //astnode_pretty_print(child, 0);
 
     astnode_destroy(&child);
     TEST_ASSERT_NULL(child);
@@ -79,7 +79,7 @@ void test_astnode_append_children(void) {
         astnode_append_child(root->children->next, child);
     }
 
-    astnode_display(root, 0);
+    astnode_pretty_print(root, 0);
 
     astnode_destroy(&root);
     TEST_ASSERT_NULL(root);
