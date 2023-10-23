@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 
         fclose(fp_in);
         printf("done.\n");
-        //tokenlist_display(tokens);  // display tokens linked list
+        tokenlist_display(tokens);  // display tokens linked list
 
         // Step 2: Parse
         printf("Parsing %s... ", argv[i]);
