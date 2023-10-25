@@ -39,20 +39,17 @@ int main(int argc, char** argv) {
         
         // Step 1: Lex
         printf("Lexing %s...  ", argv[i]);
-
         if (!(tokens = lex(fp_in))) {
             // lexing error
             fclose(fp_in);
             exit(4);
         }
-
         fclose(fp_in);
         printf("done.\n");
-        tokenlist_display(tokens);  // display tokens linked list
+        //tokenlist_display(tokens);  // display tokens linked list
 
         // Step 2: Parse
         printf("Parsing %s... ", argv[i]);
-
         if (!(ast = parse(tokens))) {
             // parsing error
             tokenlist_destroy(&tokens);
@@ -60,7 +57,6 @@ int main(int argc, char** argv) {
         }
         tokenlist_destroy(&tokens); // destroy tokens linked list
         printf("done.\n");
-
 
         // Step 3: Write
         printf("Writing %s... ", argv[i]);
