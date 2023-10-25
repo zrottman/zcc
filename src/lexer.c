@@ -11,8 +11,15 @@ struct TokenList* lex(FILE* fp) {
         safestring_set(cur_tok, ""); // reset safestring
     
         // ignore whitespace
+        /*
         if (is_whitespace(c)) {
             while ((c = fgetc(fp)) != EOF && is_whitespace(c)) {
+                ;
+            }
+        }
+        */
+        if (is_whitespace(c)) {
+            while (c != EOF && is_whitespace((c = fgetc(fp)))) {
                 ;
             }
         }
