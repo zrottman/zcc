@@ -135,7 +135,49 @@ struct TokenList* lex(FILE* fp) {
             c = fgetc(fp);
             continue;
         }
+
+        // negation
+        if (c == '-') {
+            if (safestring_appendc(cur_tok, c) != 0) {
+                // error
+            }
+            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_NEGATION, cur_tok) != 0) {
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
+            }
+            c = fgetc(fp);
+            continue;
+        }
+
+        // bitwise complement
+        if (c == '~') {
+            if (safestring_appendc(cur_tok, c) != 0) {
+                // error
+            }
+            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_BITWISE_COMPLEMENT, cur_tok) != 0) {
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
+            }
+            c = fgetc(fp);
+            continue;
+        }
         
+        // logical negation
+        if (c == '!') {
+            if (safestring_appendc(cur_tok, c) != 0) {
+                // error
+            }
+            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_LOGICAL_NEGATION, cur_tok) != 0) {
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
+            }
+            c = fgetc(fp);
+            continue;
+        }
+
         // error
         printf("No token matching pattern `%c`.\n", c);
         safestring_destroy(&cur_tok);
