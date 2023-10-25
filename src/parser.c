@@ -2,6 +2,11 @@
 
 struct Token* eat(struct TokenList *tokens, enum TokenType expected) {
     struct Token* tok = tokens->p;
+    if (tok == NULL) {
+        printf("Error, unexpected end of file.\n");
+        return NULL;
+    }
+
     if (expected != tok->type) {
         // use lookups here to print out str equiv for enum
         printf("Error, expected `%s`, got `%s`\n", get_token_name(expected), tokens->p->ss->buf);
