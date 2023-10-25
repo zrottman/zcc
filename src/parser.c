@@ -1,46 +1,102 @@
 #include "parser.h"
 
-int eat(struct token *tok, enum token_type expected, FILE* fp_in) {
+struct Token* eat(struct TokenList *tokens, enum TokenType expected) {
+    struct Token* tok = tokens->p;
+    if (tok == NULL) {
+        printf("Error, unexpected end of file.\n");
+        return NULL;
+    }
+
     if (expected != tok->type) {
         // use lookups here to print out str equiv for enum
-        printf("Error, expected `%s`, got `%s`\n", get_token_name(expected), tok->val->buf);
-        return 1;
+        printf("Error, expected `%s`, got `%s`\n", get_token_name(expected), tokens->p->ss->buf);
+        return NULL;
     }
-    display_token(tok);
-    next_token(fp_in, tok);
-    return 0;
+    //token_display(tok);
+    
+    /*
+     * would be nice to deallocate/free each token as it's consumed. however, then
+     * I'd need a destroy single token function and a recursive destroy so that,
+     * in the even of an error, I can recursively destroy. Maybe it's the same
+     * function with a boolean flag for recursive of no.
+     */
+    tokens->p = tokens->p->next; // advance token
+
+    return tok;
 }
 
-int parse(FILE* fp_in) {
+struct ASTNode* parse(struct TokenList* tokens) {
+    /*
+     * <program> ::= <function>
+     */
 
-    struct token *tok = (struct token*)malloc(sizeof(struct token));
-    tok->val = string_create(MAX_TOKEN_SIZE);
+    struct ASTNode* program_node  = NULL;
+    struct ASTNode* function_node = NULL;
 
-    next_token(fp_in, tok);
-    if (parse_function(fp_in, tok) != 0) { return 1; }
+    tokens->p = tokens->head; // set tokenlist pointer
+                              
+    if (!(function_node = parse_function(tokens))) { return NULL; }
 
-    return 0;
+    program_node = astnode_create(PROGRAM, "program");
+    astnode_append_child(program_node, function_node);
+
+    return program_node;
 }
 
-int parse_function(FILE* fp_in, struct token* tok) {
+struct ASTNode* parse_function(struct TokenList* tokens) {
+    /* 
+     * <function> ::= "int" <id> "(" ")" "{" "}" <statement> "}"
+     */
 
-    if (eat(tok, TOKEN_KEYWORD_INT, fp_in) != 0)       { return 1; }
-    if (eat(tok, TOKEN_IDENTIFIER, fp_in) != 0)        { return 2; }
-    if (eat(tok, TOKEN_SYMBOL_OPENPAREN, fp_in) != 0)  { return 3; }
-    if (eat(tok, TOKEN_SYMBOL_CLOSEPAREN, fp_in) != 0) { return 5; }
-    if (eat(tok, TOKEN_SYMBOL_OPENBRACE, fp_in) != 0)  { return 6; }
-    parse_statement(fp_in, tok);
-    if (eat(tok, TOKEN_SYMBOL_CLOSEBRACE, fp_in) != 0) { return 7; }
+    struct ASTNode* function_node  = NULL;
+    struct ASTNode* statement_node = NULL;
+    struct Token*   tok            = NULL;
 
-    return 0;
+    if (!(eat(tokens, TOKEN_KEYWORD_INT)))           { return NULL; }
+    if (!(tok = eat(tokens, TOKEN_IDENTIFIER)))      { return NULL; } // get func name from here
+    if (!(eat(tokens, TOKEN_SYMBOL_OPENPAREN)))      { return NULL; }
+    if (!(eat(tokens, TOKEN_SYMBOL_CLOSEPAREN)))     { return NULL; }
+    if (!(eat(tokens, TOKEN_SYMBOL_OPENBRACE)))      { return NULL; }
+    if (!(statement_node = parse_statement(tokens))) { return NULL; }
+    if (!(eat(tokens, TOKEN_SYMBOL_CLOSEBRACE)))     { return NULL; }
+
+    function_node = astnode_create(FUNCTION_DEC, tok->ss->buf);
+    astnode_append_child(function_node, statement_node);
+
+    return function_node;
 }
 
-int parse_statement(FILE* fp_in, struct token* tok) {
+struct ASTNode* parse_statement(struct TokenList* tokens) {
+    /*
+     * <statement> ::= "return" <exp> ";"
+     */
 
-    if (eat(tok, TOKEN_KEYWORD_RETURN, fp_in) != 0)   { return 1; }
-    if (eat(tok, TOKEN_LITERAL_INT, fp_in) != 0)      { return 2; }
-    if (eat(tok, TOKEN_SYMBOL_SEMICOLON, fp_in) != 0) { return 3; }
+    struct ASTNode* statement_node  = NULL;
+    struct ASTNode* expression_node = NULL;
+    struct Token*   tok             = NULL;
 
-    return 0;
+    if (!(tok = eat(tokens, TOKEN_KEYWORD_RETURN)))    { return NULL; }
+    if (!(expression_node = parse_expression(tokens))) { return NULL; }
+    if (!(eat(tokens, TOKEN_SYMBOL_SEMICOLON)))  { return NULL; }
+
+    statement_node = astnode_create(STATEMENT, tok->ss->buf);
+    astnode_append_child(statement_node, expression_node);
+
+    return statement_node;
+}
+
+struct ASTNode* parse_expression(struct TokenList* tokens) {
+    /*
+     * <exp> ::= <int>
+     */
+
+    struct ASTNode* expression_node = NULL;
+    struct Token*   tok             = NULL;
+
+    if (!(tok = eat(tokens, TOKEN_LITERAL_INT))) { return NULL; }
+
+    expression_node = astnode_create(EXPRESSION, tok->ss->buf);
+
+    return expression_node;
 
 }

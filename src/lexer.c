@@ -1,5 +1,153 @@
 #include "lexer.h"
 
+struct TokenList* lex(FILE* fp) {
+    signed char c;
+    struct SafeString* cur_tok = safestring_create(MAX_TOKEN_SIZE);
+    struct TokenList* tokenlist = tokenlist_create();
+
+    
+    c = fgetc(fp);
+    while (1) {
+        safestring_set(cur_tok, ""); // reset safestring
+    
+        // ignore whitespace
+        /*
+        if (is_whitespace(c)) {
+            while ((c = fgetc(fp)) != EOF && is_whitespace(c)) {
+                ;
+            }
+        }
+        */
+        if (is_whitespace(c)) {
+            while (c != EOF && is_whitespace((c = fgetc(fp)))) {
+                ;
+            }
+        }
+
+        // break if end of file
+        if (c == EOF) {
+            break;
+        }
+
+        // tokenize integer literal
+        if (is_numeric(c)) {
+            if (safestring_appendc(cur_tok, c) != 0) {
+                // error
+            }
+            while ((c = fgetc(fp)) != EOF && is_numeric(c)) {
+                if (safestring_appendc(cur_tok, c) != 0) {
+                    // error
+                }
+            }
+
+            if (tokenlist_append(tokenlist, TOKEN_LITERAL_INT, cur_tok) != 0) {
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
+            }
+            continue;
+        }
+        
+        // tokenize identifier or keyword
+        if (is_alpha(c)) {
+            if (safestring_appendc(cur_tok, c) != 0) {
+                // error
+            }
+            while ((c = fgetc(fp)) != EOF && (is_alpha(c) || is_numeric(c))) {
+                if (safestring_appendc(cur_tok, c) != 0) {
+                    // error
+                }
+            }
+            if (tokenlist_append(tokenlist, get_token_type(cur_tok), cur_tok) != 0) {
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
+            }
+            continue;
+        }
+
+        // tokenize opening brace
+        if (c == '{') {
+            if (safestring_appendc(cur_tok, c) != 0) {
+                // error
+            }
+            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_OPENBRACE, cur_tok) != 0) {
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
+            }
+            c = fgetc(fp);
+            continue;
+        }
+
+        // tokenize closing brace
+        if (c == '}') {
+            if (safestring_appendc(cur_tok, c) != 0) {
+                // error
+            }
+            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_CLOSEBRACE, cur_tok) != 0) {
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
+            }
+            c = fgetc(fp);
+            continue;
+        }
+
+        // tokenize opening paren
+        if (c == '(') {
+            if (safestring_appendc(cur_tok, c) != 0) {
+                // error
+            }
+            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_OPENPAREN, cur_tok) != 0) {
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
+            }
+            c = fgetc(fp);
+            continue;
+        }
+
+        // tokenize closing paren
+        if (c == ')') {
+            if (safestring_appendc(cur_tok, c) != 0) {
+                // error
+            }
+            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_CLOSEPAREN, cur_tok) != 0) {
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
+            }
+            c = fgetc(fp);
+            continue;
+        }
+
+        // semicolon
+        if (c == ';') {
+            if (safestring_appendc(cur_tok, c) != 0) {
+                // error
+            }
+            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_SEMICOLON, cur_tok) != 0) {
+                safestring_destroy(&cur_tok);
+                tokenlist_destroy(&tokenlist);
+                return NULL;
+            }
+            c = fgetc(fp);
+            continue;
+        }
+        
+        // error
+        printf("No token matching pattern `%c`.\n", c);
+        safestring_destroy(&cur_tok);
+        tokenlist_destroy(&tokenlist);
+        return NULL;
+    }
+
+    safestring_destroy(&cur_tok);
+
+    return tokenlist;
+}
+
 bool is_whitespace(const int c) {
     return c == ' ' || c == '\r' || c == '\t' || c == '\n';
 }
@@ -12,91 +160,3 @@ bool is_numeric(const int c) {
     return '0' <= c && c <= '9';
 }
 
-int next_token(FILE* fp, struct token* tok) {
-    int c;
-    string_set(tok->val, "");
-    
-    c = fgetc(fp);
-    
-    // whitespace
-    if (is_whitespace(c)) {
-        while ((c = fgetc(fp)) != EOF && is_whitespace(c)) {
-            ;
-        }
-    }
-
-    if (c == EOF) {
-        return 1;
-    }
-
-    // integer literal
-    if (is_numeric(c)) {
-        tok->type = TOKEN_LITERAL_INT;
-        if (string_appendc(tok->val, c) != 0) {
-            // error
-        }
-        while ((c = fgetc(fp)) != EOF && is_numeric(c)) {
-            if (string_appendc(tok->val, c) != 0) {
-                // error
-            }
-        }
-        ungetc(c, fp);
-    
-    // identifier or keyword
-    } else if (is_alpha(c)) {
-        if (string_appendc(tok->val, c) != 0) {
-            // error
-        }
-        while ((c = fgetc(fp)) != EOF && (is_alpha(c) || is_numeric(c))) {
-            if (string_appendc(tok->val, c) != 0) {
-                // error
-            }
-        }
-
-        // check to see if this is a reserved term
-        tok->type = get_token_type(tok->val->buf);
-        ungetc(c, fp);
-        
-    // opening brace
-    } else if (c == '{') {
-        tok->type = TOKEN_SYMBOL_OPENBRACE;
-        if (string_appendc(tok->val, c) != 0) {
-            // error
-        }
-
-    // closing brace
-    } else if (c == '}') {
-        tok->type = TOKEN_SYMBOL_CLOSEBRACE;
-        if (string_appendc(tok->val, c) != 0) {
-            // error
-        }
-
-    // opening paren
-    } else if (c == '(') {
-        tok->type = TOKEN_SYMBOL_OPENPAREN;
-        if (string_appendc(tok->val, c) != 0) {
-            // error
-        }
-
-    // closing paren
-    } else if (c == ')') {
-        tok->type = TOKEN_SYMBOL_CLOSEPAREN;
-        if (string_appendc(tok->val, c) != 0) {
-            // error
-        }
-
-    // semicolon
-    } else if (c == ';') {
-        tok->type = TOKEN_SYMBOL_SEMICOLON;
-        if (string_appendc(tok->val, c) != 0) {
-            // error
-        }
-    
-    // error
-    } else {
-        printf("`%c` is unrecognized token\n", c);
-        return 1;
-    }
-
-    return 0;
-}

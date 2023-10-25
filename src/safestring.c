@@ -1,38 +1,43 @@
 #include "safestring.h"
 
-struct string_t* string_create(size_t capacity) {
-    struct string_t* str = malloc(sizeof(struct string_t));
+struct SafeString* safestring_create(size_t capacity) {
 
-    if (!str) {
+    // caller can handle errors by checking for nullity
+    
+    struct SafeString* ss = (struct SafeString*)malloc(sizeof(struct SafeString));
+
+    if (!ss) {
         return NULL; // malloc failure
     }
 
-    str->buf = malloc(capacity);
-    if (!str->buf) {
-        free(str);
+    ss->buf = malloc(capacity);
+    if (!ss->buf) {
+        free(ss);
         return NULL; // malloc failure
     }
 
-    str->len    = 0;
-    str->cap    = capacity;
-    str->buf[0] = '\0';
+    ss->len    = 0;        // does not include null byte
+    ss->cap    = capacity; // includes null byte
+    ss->buf[0] = '\0';
 
-    return str;
+    return ss;
 }
 
-int string_destroy(struct string_t** str) {
-    if (*str) {
-        if ((*str)->buf) {
-            free((*str)->buf);
-            (*str)->buf = NULL;
+int safestring_destroy(struct SafeString** ss) {
+    struct SafeString* s = *ss;
+    if (s) {
+        if (s->buf) {
+            free(s->buf);
+            s->buf = NULL;
         }
-        free(*str);
-        (*str) = NULL;
+        free(s);
+        //s = NULL;
+        *ss = NULL;
     }
     return 0;
 }
 
-int string_set(struct string_t* dest, const char* src) {
+int safestring_set(struct SafeString* dest, const char* src) {
     size_t src_len = strlen(src); // strlen does not include null byte
     if (src_len >= dest->cap) {
         return 1; // insufficient space
@@ -43,12 +48,26 @@ int string_set(struct string_t* dest, const char* src) {
     return 0;
 }
 
-int string_appendc(struct string_t* str, const char c) {
-    if (str->len + 1 == str->cap) {
+int safestring_appendc(struct SafeString* ss, const char c) {
+    if (ss->len + 1 == ss->cap) {
         return 1; // not enough space
     }
-    str->buf[str->len++] = c;
-    str->buf[str->len] = 0;
+    ss->buf[ss->len++] = c;
+    ss->buf[ss->len] = 0;
+    return 0;
+}
+
+int safestring_append(struct SafeString* ss, const char* s) {
+    // ensure there's enough room
+    size_t s_len = strlen(s);
+    if (ss->len + s_len >= ss->cap) {
+        return 1; // not enough space
+    }
+    for (int i=0; i<s_len; ++i) {
+        if (safestring_appendc(ss, s[i]) != 0) {
+            return 2; // error
+        }
+    }
     return 0;
 }
 

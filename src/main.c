@@ -1,12 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "utils.h"
+#include "token.h"
+#include "lexer.h"
 #include "parser.h"
+#include "writer.h"
 
 int main(int argc, char** argv) {
 
     FILE* fp_in;
     char* ext;
+
+    struct TokenList* tokens = NULL;
+    struct ASTNode*   ast    = NULL;
 
     // validate argc
     if (argc < 2) {
@@ -24,17 +30,44 @@ int main(int argc, char** argv) {
         }
     }
 
-    // parse each file
+    // compile each file
     for(int i=1; i<argc; ++i) {
         if ((fp_in = fopen(argv[i], "r")) == NULL) {
             printf("Input file `%s` could not be opened or found.\n", argv[i]);
             exit(3);
         }
-
-        // parse file
-        parse(fp_in);
-
+        
+        // Step 1: Lex
+        printf("Lexing %s...  ", argv[i]);
+        if (!(tokens = lex(fp_in))) {
+            // lexing error
+            fclose(fp_in);
+            exit(4);
+        }
         fclose(fp_in);
+        printf("done.\n");
+        //tokenlist_display(tokens);  // display tokens linked list
+
+        // Step 2: Parse
+        printf("Parsing %s... ", argv[i]);
+        if (!(ast = parse(tokens))) {
+            // parsing error
+            tokenlist_destroy(&tokens);
+            exit(5);
+        }
+        tokenlist_destroy(&tokens); // destroy tokens linked list
+        printf("done.\n");
+
+        // Step 3: Write
+        printf("Writing %s... ", argv[i]);
+        generate(ast, argv[i]);
+        printf("done\n");
+
+
+        //printf("\nAST\n");
+        //astnode_pretty_print(ast, 0);    // pretty print AST
+
+        astnode_destroy(&ast);      // destroy ast
     }
 
     return 0;

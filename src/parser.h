@@ -3,11 +3,14 @@
 
 #include <stdio.h>
 #include "safestring.h"
-#include "lexer.h"
 #include "token.h"
+#include "ast.h"
 
-int parse(FILE* fp_in);
-int parse_function(FILE* fp_in, struct token* tok);
-int parse_statement(FILE* fp_in, struct token* tok);
+struct Token*   eat(struct TokenList* tokens, enum TokenType expected);
+
+struct ASTNode* parse(struct TokenList* tokens);
+struct ASTNode* parse_function(struct TokenList* tokens);
+struct ASTNode* parse_statement(struct TokenList* tokens);
+struct ASTNode* parse_expression(struct TokenList* tokens);
 
 #endif // PARSER_H
