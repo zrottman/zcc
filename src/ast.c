@@ -83,6 +83,7 @@ void astnode_pretty_print(struct ASTNode* node, size_t indent) {
     for (i=0; i<indent; ++i) {
         printf(" ");
     }
+    // TODO: print enum node type (translated to string) AND value
     printf("%s\n", node->ss->buf);
 
     // print children

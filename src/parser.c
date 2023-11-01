@@ -25,7 +25,7 @@ struct Token* eat(struct TokenList *tokens, enum TokenType expected) {
     return tok;
 }
 
-struct ASTNode* parse(struct TokenList* tokens) {
+struct ASTNode* parse_program(struct TokenList* tokens) {
     /*
      * <program> ::= <function>
      */
@@ -35,15 +35,15 @@ struct ASTNode* parse(struct TokenList* tokens) {
 
     tokens->p = tokens->head; // set tokenlist pointer
                               
-    if (!(function_node = parse_function(tokens))) { return NULL; }
+    if (!(function_node = parse_function_dec(tokens))) { return NULL; }
 
-    program_node = astnode_create(PROGRAM, "program");
+    program_node = astnode_create(PROGRAM, "");
     astnode_append_child(program_node, function_node);
 
     return program_node;
 }
 
-struct ASTNode* parse_function(struct TokenList* tokens) {
+struct ASTNode* parse_function_dec(struct TokenList* tokens) {
     /* 
      * <function> ::= "int" <id> "(" ")" "{" "}" <statement> "}"
      */
@@ -87,16 +87,54 @@ struct ASTNode* parse_statement(struct TokenList* tokens) {
 
 struct ASTNode* parse_expression(struct TokenList* tokens) {
     /*
-     * <exp> ::= <int>
+     * <exp> ::= <unary_op> <exp> | <int>
+     */
+
+    /*
+     * an expression has children. it can have a single <int> child or
+     * a <unary_op> and <exp> childrenj
+     * 
      */
 
     struct ASTNode* expression_node = NULL;
     struct Token*   tok             = NULL;
+    struct ASTNode* expression_child_node = NULL;
 
-    if (!(tok = eat(tokens, TOKEN_LITERAL_INT))) { return NULL; }
+    switch (token_lookahead(tokens)->type) { // TODO need lookahead here
+                                             
+        case TOKEN_LITERAL_INT:
+            expression_node = astnode_create(EXPRESSION, "<exp> ::= <int>");
+            if (!(expression_child_node = parse_int_literal(tokens))) { return NULL; }
+            astnode_append_child(expression_node, expression_child_node);
+            break;
 
-    expression_node = astnode_create(EXPRESSION, tok->ss->buf);
+        case TOKEN_SYMBOL_NEGATION:
+        case TOKEN_SYMBOL_BITWISE_COMPLEMENT:
+        case TOKEN_SYMBOL_LOGICAL_NEGATION:
+            expression_node = astnode_create(EXPRESSION, "<exp> ::= <unary_op> <exp>");
+            if (!(expression_child_node = parse_unary_op(tokens))) { return NULL; }
+            astnode_append_child(expression_node, expression_child_node);
+            if (!expression_child_node = parse_expression(tokens)) {return NULL;}
+            astnode_append_child(expression_node, expression_child_node);
+            break;
+    }
 
     return expression_node;
 
+}
+
+struct ASTNode* parse_int_literal(struct TokenList* tokens) {
+    struct Token* tok = NULL;
+    if (!(tok = eat(tokens, TOKEN_LITERAL_INT))) { return NULL; }
+    return astnode_create(INT_LITERAL, tok->ss->buf);
+}
+
+struct ASTNode* parse_unary_op(struct TokenList* tokens) {
+    /*
+     * <unary_op> ::= "!" | "~" | "-"
+     */
+
+    struct Token*   tok           = NULL;
+    if (!(tok = eat(tokens, TOKEN_UNARY_OP))) { return NULL; }
+    return astnode_create(UNARY_OP, tok->ss->buf);
 }

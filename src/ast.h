@@ -6,6 +6,9 @@
 
 #define MAX_NODE_LENGTH 32
 
+// TODO: create map of enums to string representations and
+// function to translate
+//
 enum ASTNodeType {
     PROGRAM,
     FUNCTION_DEC,
