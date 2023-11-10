@@ -3,6 +3,18 @@
 // TODO:
 // have append functions return pointer to appended node, which may come in handy down the road
 
+struct {
+    enum ASTNodeType type;
+    char*            description;
+} ASTNODEMAP[] = {
+    { PROGRAM,      "<program>"      },
+    { FUNCTION_DEC, "<function dec>" },
+    { STATEMENT,    "<statement>"    },
+    { EXPRESSION,   "<exp>"          },
+    { UNARY_OP,     "<unary op>"     },
+    { INT_LITERAL,  "<int literal>"  },
+};
+
 struct ASTNode* astnode_create(enum ASTNodeType type, char* name) {
 
     struct ASTNode* node = (struct ASTNode*)malloc(sizeof(struct ASTNode));
@@ -83,8 +95,9 @@ void astnode_pretty_print(struct ASTNode* node, size_t indent) {
     for (i=0; i<indent; ++i) {
         printf(" ");
     }
+
     // TODO: print enum node type (translated to string) AND value
-    printf("%s\n", node->ss->buf);
+    printf("%s %s\n", get_astnode_name(node->type), node->ss->buf);
 
     // print children
     if (node->children) {
@@ -95,8 +108,16 @@ void astnode_pretty_print(struct ASTNode* node, size_t indent) {
     if (node->next) {
         astnode_pretty_print(node->next, indent);
     }
-
-
     
 }
 
+const char* get_astnode_name(enum ASTNodeType type) {
+    size_t i;
+    for (i=0; ASTNODEMAP[i].description != NULL; ++i) {
+        if (ASTNODEMAP[i].type == type) {
+            return ASTNODEMAP[i].description;
+        }
+    }
+    return "UNKNOWN";
+
+}

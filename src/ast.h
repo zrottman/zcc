@@ -25,10 +25,18 @@ struct ASTNode {
     struct ASTNode*     next;      // points to next sibling
 };
 
+/*
+struct ASTNodeMap {
+    enum ASTNodeType type;
+    char*            description;
+}
+*/
+
 struct ASTNode* astnode_create(enum ASTNodeType, char* name);
 int             astnode_destroy(struct ASTNode** n);
 int             astnode_append_child(struct ASTNode* parent, struct ASTNode* child);
 int             astnode_append_sibling(struct ASTNode* node, struct ASTNode* sibling);
 void            astnode_pretty_print(struct ASTNode* node, size_t indent);
+const char* get_astnode_name(enum ASTNodeType type);
 
 #endif // AST_H
