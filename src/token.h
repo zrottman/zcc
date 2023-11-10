@@ -47,12 +47,6 @@ struct TokenList {
     size_t             len;
 };
 
-struct TokenMap {
-    enum TokenType     type;
-    char*              literal;
-    char*              description;
-};
-
 // Token functions
 struct Token*     token_create(enum TokenType type, struct SafeString* ss);
 int               token_destroy(struct Token** tok);

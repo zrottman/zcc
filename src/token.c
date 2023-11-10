@@ -1,6 +1,10 @@
 #include "token.h"
 
-struct TokenMap TOKEN_MAP[] = {
+struct {
+    enum TokenType     type;
+    char*              literal;
+    char*              description;
+} TOKEN_MAP[] = {
 
     // Symbols
     { TOKEN_SYMBOL_OPENBRACE,          "{",      "symbols: {"      },
