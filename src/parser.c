@@ -112,14 +112,11 @@ struct ASTNode* parse_expression(struct TokenList* tokens) {
     struct ASTNode* expression_node = NULL;
     struct ASTNode* expression_child_node = NULL;
 
-    printf("Peeking: ");
-    token_display(peek(tokens));
-
+    expression_node = astnode_create(EXPRESSION, "");
 
     switch (peek(tokens)->type) { // TODO need lookahead here
                                              
         case TOKEN_LITERAL_INT:
-            expression_node = astnode_create(EXPRESSION, "<exp> ::= <int>");
             if (!(expression_child_node = parse_int_literal(tokens))) { 
                 printf("Error parsing int literal.\n");
                 return NULL; 
@@ -130,7 +127,6 @@ struct ASTNode* parse_expression(struct TokenList* tokens) {
         case TOKEN_SYMBOL_NEGATION:
         case TOKEN_SYMBOL_BITWISE_COMPLEMENT:
         case TOKEN_SYMBOL_LOGICAL_NEGATION:
-            expression_node = astnode_create(EXPRESSION, "<exp> ::= <unary_op> <exp>");
             if (!(expression_child_node = parse_unary_op(tokens))) { 
                 printf("Error parsing unary op.\n");
                 return NULL; 
