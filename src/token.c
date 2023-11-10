@@ -76,8 +76,8 @@ int token_destroy(struct Token** tok) {
 }
 
 void token_display(struct Token* tok) {
-    printf("Token value : %s\n", tok->ss->buf);
-    printf("Token type  : %s\n\n", get_token_name(tok->type));
+    printf("%s / ", tok->ss->buf);
+    printf("%s -> ", get_token_name(tok->type));
 }
 
 
