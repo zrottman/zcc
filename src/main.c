@@ -46,7 +46,6 @@ int main(int argc, char** argv) {
         }
         fclose(fp_in);
         printf("done.\n");
-        //tokenlist_display(tokens);  // display tokens linked list
 
         // Step 2: Parse
         printf("Parsing %s... ", argv[i]);
@@ -55,7 +54,6 @@ int main(int argc, char** argv) {
             tokenlist_destroy(&tokens);
             exit(5);
         }
-        tokenlist_destroy(&tokens); // destroy tokens linked list
         printf("done.\n");
 
         // Step 3: Write
@@ -64,9 +62,17 @@ int main(int argc, char** argv) {
         printf("done\n");
 
 
-        //printf("\nAST\n");
-        //astnode_pretty_print(ast, 0);    // pretty print AST
+        // Display data structures
+        printf("TOKENS\n");
+        tokenlist_display(tokens);    // display tokens linked list
+        printf("\n");
 
+        printf("AST\n");
+        astnode_pretty_print(ast, 0); // pretty print AST
+        printf("\n");
+
+        // Destroy data structures
+        tokenlist_destroy(&tokens); // destroy tokens linked list
         astnode_destroy(&ast);      // destroy ast
     }
 
