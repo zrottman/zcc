@@ -25,7 +25,11 @@ struct Token* eat(struct TokenList *tokens, enum TokenType expected) {
     return tok;
 }
 
-struct ASTNode* parse_program(struct TokenList* tokens) {
+struct Token* peek(struct TokenList *tokens) {
+    return tokens->p;
+}
+
+struct ASTNode* parse(struct TokenList* tokens) {
     /*
      * <program> ::= <function>
      */
@@ -35,7 +39,10 @@ struct ASTNode* parse_program(struct TokenList* tokens) {
 
     tokens->p = tokens->head; // set tokenlist pointer
                               
-    if (!(function_node = parse_function_dec(tokens))) { return NULL; }
+    if (!(function_node = parse_function_dec(tokens))) { 
+        printf("Error parsing function declaration.\n");
+        return NULL; 
+    }
 
     program_node = astnode_create(PROGRAM, "");
     astnode_append_child(program_node, function_node);
@@ -45,7 +52,7 @@ struct ASTNode* parse_program(struct TokenList* tokens) {
 
 struct ASTNode* parse_function_dec(struct TokenList* tokens) {
     /* 
-     * <function> ::= "int" <id> "(" ")" "{" "}" <statement> "}"
+     * <function> ::= "int" <id> "(" ")" "{" <statement> "}"
      */
 
     struct ASTNode* function_node  = NULL;
@@ -57,7 +64,10 @@ struct ASTNode* parse_function_dec(struct TokenList* tokens) {
     if (!(eat(tokens, TOKEN_SYMBOL_OPENPAREN)))      { return NULL; }
     if (!(eat(tokens, TOKEN_SYMBOL_CLOSEPAREN)))     { return NULL; }
     if (!(eat(tokens, TOKEN_SYMBOL_OPENBRACE)))      { return NULL; }
-    if (!(statement_node = parse_statement(tokens))) { return NULL; }
+    if (!(statement_node = parse_statement(tokens))) { 
+        printf("Error parsing statement.\n");
+        return NULL; 
+    }
     if (!(eat(tokens, TOKEN_SYMBOL_CLOSEBRACE)))     { return NULL; }
 
     function_node = astnode_create(FUNCTION_DEC, tok->ss->buf);
@@ -76,7 +86,10 @@ struct ASTNode* parse_statement(struct TokenList* tokens) {
     struct Token*   tok             = NULL;
 
     if (!(tok = eat(tokens, TOKEN_KEYWORD_RETURN)))    { return NULL; }
-    if (!(expression_node = parse_expression(tokens))) { return NULL; }
+    if (!(expression_node = parse_expression(tokens))) { 
+        printf("Error parsing expression.\n");
+        return NULL; 
+    }
     if (!(eat(tokens, TOKEN_SYMBOL_SEMICOLON)))  { return NULL; }
 
     statement_node = astnode_create(STATEMENT, tok->ss->buf);
@@ -97,14 +110,20 @@ struct ASTNode* parse_expression(struct TokenList* tokens) {
      */
 
     struct ASTNode* expression_node = NULL;
-    struct Token*   tok             = NULL;
     struct ASTNode* expression_child_node = NULL;
 
-    switch (token_lookahead(tokens)->type) { // TODO need lookahead here
+    printf("Peeking: ");
+    token_display(peek(tokens));
+
+
+    switch (peek(tokens)->type) { // TODO need lookahead here
                                              
         case TOKEN_LITERAL_INT:
             expression_node = astnode_create(EXPRESSION, "<exp> ::= <int>");
-            if (!(expression_child_node = parse_int_literal(tokens))) { return NULL; }
+            if (!(expression_child_node = parse_int_literal(tokens))) { 
+                printf("Error parsing int literal.\n");
+                return NULL; 
+            }
             astnode_append_child(expression_node, expression_child_node);
             break;
 
@@ -112,9 +131,15 @@ struct ASTNode* parse_expression(struct TokenList* tokens) {
         case TOKEN_SYMBOL_BITWISE_COMPLEMENT:
         case TOKEN_SYMBOL_LOGICAL_NEGATION:
             expression_node = astnode_create(EXPRESSION, "<exp> ::= <unary_op> <exp>");
-            if (!(expression_child_node = parse_unary_op(tokens))) { return NULL; }
+            if (!(expression_child_node = parse_unary_op(tokens))) { 
+                printf("Error parsing unary op.\n");
+                return NULL; 
+            }
             astnode_append_child(expression_node, expression_child_node);
-            if (!expression_child_node = parse_expression(tokens)) {return NULL;}
+            if (!(expression_child_node = parse_expression(tokens))) {
+                printf("Error parsing expression.\n");
+                return NULL;
+            }
             astnode_append_child(expression_node, expression_child_node);
             break;
     }
@@ -135,6 +160,6 @@ struct ASTNode* parse_unary_op(struct TokenList* tokens) {
      */
 
     struct Token*   tok           = NULL;
-    if (!(tok = eat(tokens, TOKEN_UNARY_OP))) { return NULL; }
+    if (!(tok = eat(tokens, TOKEN_SYMBOL_UNARY_OP))) { return NULL; }
     return astnode_create(UNARY_OP, tok->ss->buf);
 }

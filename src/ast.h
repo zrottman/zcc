@@ -13,7 +13,9 @@ enum ASTNodeType {
     PROGRAM,
     FUNCTION_DEC,
     STATEMENT,
-    EXPRESSION
+    EXPRESSION,
+    UNARY_OP,
+    INT_LITERAL
 };
 
 struct ASTNode {
