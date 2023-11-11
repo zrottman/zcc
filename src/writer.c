@@ -73,10 +73,12 @@ void emit_unary_op(struct ASTNode* node, FILE* fp) {
             fprintf(fp, "neg \t%%eax\n");
             break;
         case '!':
-            fprintf(fp, "\n");
+            fprintf(fp, "cmpl\t $0, %%eax\n");
+            fprintf(fp, "movl\t $0, %%eax\n");
+            fprintf(fp, "sete\t %%al\n");
             break;
         case '~':
-            fprintf(fp, "it's tilde\n");
+            fprintf(fp, "not \t%%eax\n");
             break;
     }
     return;
