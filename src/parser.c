@@ -158,7 +158,7 @@ struct ASTNode* parse_unary_op(struct TokenList* tokens) {
      * <unary_op> ::= "!" | "~" | "-"
      */
 
-    struct Token*   tok           = NULL;
+    struct Token* tok = NULL;
     if (!(tok = eat(tokens, TOKEN_SYMBOL_UNARY_OP))) { return NULL; }
     return astnode_create(UNARY_OP, tok->ss->buf);
 }
