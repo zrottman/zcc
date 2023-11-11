@@ -39,11 +39,9 @@ void generate_inner(struct ASTNode* node, FILE* fp) {
             emit_int_literal(node, fp);
             break;
         case UNARY_OP:
-            emit_unary_op(node, fp);
             generate_inner(node->children, fp);
+            emit_unary_op(node, fp);
             break;
-            
-
     }
 
     generate_inner(node->next, fp);
@@ -72,10 +70,10 @@ void emit_unary_op(struct ASTNode* node, FILE* fp) {
      */
     switch (node->ss->buf[0]) {
         case '-':
-            fprintf(fp, "it's minus\n");
+            fprintf(fp, "neg \t%%eax\n");
             break;
         case '!':
-            fprintf(fp, "it's explamation point\n");
+            fprintf(fp, "\n");
             break;
         case '~':
             fprintf(fp, "it's tilde\n");
