@@ -135,11 +135,13 @@ struct ASTNode* parse_expression(struct TokenList* tokens) {
                 return NULL; 
             }
             astnode_append_child(expression_node, expression_child_node);
+            /*
             if (!(expression_child_node = parse_expression(tokens))) {
                 printf("Error parsing expression.\n");
                 return NULL;
             }
             astnode_append_child(expression_node, expression_child_node);
+            */
             break;
     }
 
@@ -158,7 +160,16 @@ struct ASTNode* parse_unary_op(struct TokenList* tokens) {
      * <unary_op> ::= "!" | "~" | "-"
      */
 
+    struct ASTNode* unary_op_node = NULL;
+    struct ASTNode* unary_op_child_node = NULL;
     struct Token* tok = NULL;
     if (!(tok = eat(tokens, TOKEN_SYMBOL_UNARY_OP))) { return NULL; }
-    return astnode_create(UNARY_OP, tok->ss->buf);
+    unary_op_node = astnode_create(UNARY_OP, tok->ss->buf);
+    if (!(unary_op_child_node = parse_expression(tokens))) {
+        printf("Error parsing expression\n");
+        return NULL;
+    }
+    astnode_append_child(unary_op_node, unary_op_child_node);
+    
+    return unary_op_node;
 }
