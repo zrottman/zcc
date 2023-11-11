@@ -1,25 +1,35 @@
 #include "token.h"
 
-struct TokenMap TOKEN_MAP[] = {
+struct {
+    enum TokenType     type;
+    char*              literal;
+    char*              description;
+} TOKEN_MAP[] = {
 
     // Symbols
-    { TOKEN_SYMBOL_OPENBRACE,  "{",      "symbol -> open brace"  },
-    { TOKEN_SYMBOL_CLOSEBRACE, "}",      "symbol -> close brace" },
-    { TOKEN_SYMBOL_OPENPAREN,  "(",      "symbol -> open paren"  },
-    { TOKEN_SYMBOL_CLOSEPAREN, ")",      "symbol -> close paren" },
-    { TOKEN_SYMBOL_SEMICOLON,  ";",      "symbols -> semi-colon" },
+    { TOKEN_SYMBOL_OPENBRACE,          "{",      "symbols: {"      },
+    { TOKEN_SYMBOL_CLOSEBRACE,         "}",      "symbols: }"      },
+    { TOKEN_SYMBOL_OPENPAREN,          "(",      "symbols: ("      },
+    { TOKEN_SYMBOL_CLOSEPAREN,         ")",      "symbols: )"      },
+    { TOKEN_SYMBOL_SEMICOLON,          ";",      "symbols: ;"      },
+    /*
+    { TOKEN_SYMBOL_NEGATION,           "-",      "symbols: -"      },
+    { TOKEN_SYMBOL_BITWISE_COMPLEMENT, "~",      "symbols: ~"      },
+    { TOKEN_SYMBOL_LOGICAL_NEGATION,   "!",      "symbols: !"      },
+    */
+    { TOKEN_SYMBOL_UNARY_OP,           "~|-|!",  "unary op"        },
 
     // Keywords
-    { TOKEN_KEYWORD_RETURN,    "return", "keyword -> return"     },
-    { TOKEN_KEYWORD_INT,       "int",    "keyword -> int"        },
+    { TOKEN_KEYWORD_RETURN,            "return", "keyword: return" },
+    { TOKEN_KEYWORD_INT,               "int",    "keyword: int"    },
 
     // Identifiers
-    { TOKEN_IDENTIFIER,        NULL,     "identifier"            },
+    { TOKEN_IDENTIFIER,                NULL,     "identifier"      },
 
     // Literals
-    { TOKEN_LITERAL_INT,       NULL,     "int literal"           },
+    { TOKEN_LITERAL_INT,               NULL,     "int literal"     },
 
-    { TOKEN_END,               NULL,     NULL                    }
+    { TOKEN_END,                       NULL,     NULL              }
 
 };
 
@@ -73,8 +83,8 @@ int token_destroy(struct Token** tok) {
 }
 
 void token_display(struct Token* tok) {
-    printf("Token value : %s\n", tok->ss->buf);
-    printf("Token type  : %s\n\n", get_token_name(tok->type));
+    printf("%s / ", tok->ss->buf);
+    printf("%s -> ", get_token_name(tok->type));
 }
 
 

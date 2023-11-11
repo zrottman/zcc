@@ -6,11 +6,16 @@
 
 #define MAX_NODE_LENGTH 32
 
+// TODO: create map of enums to string representations and
+// function to translate
+//
 enum ASTNodeType {
     PROGRAM,
     FUNCTION_DEC,
     STATEMENT,
-    EXPRESSION
+    EXPRESSION,
+    UNARY_OP,
+    INT_LITERAL
 };
 
 struct ASTNode {
@@ -25,5 +30,6 @@ int             astnode_destroy(struct ASTNode** n);
 int             astnode_append_child(struct ASTNode* parent, struct ASTNode* child);
 int             astnode_append_sibling(struct ASTNode* node, struct ASTNode* sibling);
 void            astnode_pretty_print(struct ASTNode* node, size_t indent);
+const char*     get_astnode_name(enum ASTNodeType type);
 
 #endif // AST_H

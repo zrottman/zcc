@@ -15,6 +15,12 @@ enum TokenType {
     TOKEN_SYMBOL_OPENPAREN,
     TOKEN_SYMBOL_CLOSEPAREN,
     TOKEN_SYMBOL_SEMICOLON,
+    /*
+    TOKEN_SYMBOL_NEGATION,
+    TOKEN_SYMBOL_BITWISE_COMPLEMENT,
+    TOKEN_SYMBOL_LOGICAL_NEGATION,
+    */
+    TOKEN_SYMBOL_UNARY_OP,
 
     // Keywords
     TOKEN_KEYWORD_RETURN,
@@ -41,12 +47,6 @@ struct TokenList {
     struct Token*      tail;
     struct Token*      p;      // pointer to current token, for use by parser
     size_t             len;
-};
-
-struct TokenMap {
-    enum TokenType     type;
-    char*              literal;
-    char*              description;
 };
 
 // Token functions
