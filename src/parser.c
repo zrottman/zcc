@@ -112,7 +112,6 @@ struct ASTNode* parse_expression(struct TokenList* tokens) {
     struct ASTNode* expression_node = NULL;
     struct ASTNode* expression_child_node = NULL;
 
-    expression_node = astnode_create(EXPRESSION, "");
 
     switch (peek(tokens)->type) { // TODO need lookahead here
                                              
@@ -121,32 +120,20 @@ struct ASTNode* parse_expression(struct TokenList* tokens) {
                 printf("Error parsing int literal.\n");
                 return NULL; 
             }
-            astnode_append_child(expression_node, expression_child_node);
             break;
-
-        /*
-        case TOKEN_SYMBOL_NEGATION:
-        case TOKEN_SYMBOL_BITWISE_COMPLEMENT:
-        case TOKEN_SYMBOL_LOGICAL_NEGATION:
-        */
         case TOKEN_SYMBOL_UNARY_OP:
             if (!(expression_child_node = parse_unary_op(tokens))) { 
                 printf("Error parsing unary op.\n");
                 return NULL; 
             }
-            astnode_append_child(expression_node, expression_child_node);
-            /*
-            if (!(expression_child_node = parse_expression(tokens))) {
-                printf("Error parsing expression.\n");
-                return NULL;
-            }
-            astnode_append_child(expression_node, expression_child_node);
-            */
             break;
         default:
             printf("Unexpected token in expression\n");
             return NULL;
     }
+    
+    expression_node = astnode_create(EXPRESSION, "");
+    astnode_append_child(expression_node, expression_child_node);
 
     return expression_node;
 
@@ -166,12 +153,15 @@ struct ASTNode* parse_unary_op(struct TokenList* tokens) {
     struct ASTNode* unary_op_node = NULL;
     struct ASTNode* unary_op_child_node = NULL;
     struct Token* tok = NULL;
+
     if (!(tok = eat(tokens, TOKEN_SYMBOL_UNARY_OP))) { return NULL; }
-    unary_op_node = astnode_create(UNARY_OP, tok->ss->buf);
+
     if (!(unary_op_child_node = parse_expression(tokens))) {
         printf("Error parsing expression\n");
         return NULL;
     }
+
+    unary_op_node = astnode_create(UNARY_OP, tok->ss->buf);
     astnode_append_child(unary_op_node, unary_op_child_node);
     
     return unary_op_node;
