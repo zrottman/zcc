@@ -143,6 +143,9 @@ struct ASTNode* parse_expression(struct TokenList* tokens) {
             astnode_append_child(expression_node, expression_child_node);
             */
             break;
+        default:
+            printf("Unexpected token in expression\n");
+            return NULL;
     }
 
     return expression_node;
