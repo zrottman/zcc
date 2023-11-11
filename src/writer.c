@@ -33,8 +33,17 @@ void generate_inner(struct ASTNode* node, FILE* fp) {
             emit_return(fp);
             break;
         case EXPRESSION:
-            fprintf(fp, "movl\t$%s, %%eax\n", node->ss->buf);
+            generate_inner(node->children, fp);
             break;
+        case INT_LITERAL:
+            emit_int_literal(node, fp);
+            break;
+        case UNARY_OP:
+            emit_unary_op(node, fp);
+            generate_inner(node->children, fp);
+            break;
+            
+
     }
 
     generate_inner(node->next, fp);
@@ -48,6 +57,30 @@ void emit_function_prologue(struct ASTNode* node, FILE* fp) {
 
 void emit_return(FILE* fp) {
     fprintf(fp, "ret\n");
+    return;
+}
+
+void emit_int_literal(struct ASTNode* node, FILE* fp) {
+    fprintf(fp, "movl\t$%s, %%eax\n", node->ss->buf);
+    return;
+}
+
+void emit_unary_op(struct ASTNode* node, FILE* fp) {
+    /* not sure if I like this solution of going to the string buf and comparing
+     * chars. It works, but there's a tradeoff. The advantage is having a single
+     * enum for UNARY_OP rather than 3 different enums for each kind.
+     */
+    switch (node->ss->buf[0]) {
+        case '-':
+            fprintf(fp, "it's minus\n");
+            break;
+        case '!':
+            fprintf(fp, "it's explamation point\n");
+            break;
+        case '~':
+            fprintf(fp, "it's tilde\n");
+            break;
+    }
     return;
 }
 
