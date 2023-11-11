@@ -141,7 +141,8 @@ struct TokenList* lex(FILE* fp) {
             if (safestring_appendc(cur_tok, c) != 0) {
                 // error
             }
-            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_NEGATION, cur_tok) != 0) {
+            //if (tokenlist_append(tokenlist, TOKEN_SYMBOL_NEGATION, cur_tok) != 0) {
+            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_UNARY_OP, cur_tok) != 0) {
                 safestring_destroy(&cur_tok);
                 tokenlist_destroy(&tokenlist);
                 return NULL;
@@ -155,7 +156,8 @@ struct TokenList* lex(FILE* fp) {
             if (safestring_appendc(cur_tok, c) != 0) {
                 // error
             }
-            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_BITWISE_COMPLEMENT, cur_tok) != 0) {
+            //if (tokenlist_append(tokenlist, TOKEN_SYMBOL_BITWISE_COMPLEMENT, cur_tok) != 0) {
+            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_UNARY_OP, cur_tok) != 0) {
                 safestring_destroy(&cur_tok);
                 tokenlist_destroy(&tokenlist);
                 return NULL;
@@ -169,7 +171,8 @@ struct TokenList* lex(FILE* fp) {
             if (safestring_appendc(cur_tok, c) != 0) {
                 // error
             }
-            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_LOGICAL_NEGATION, cur_tok) != 0) {
+            //if (tokenlist_append(tokenlist, TOKEN_SYMBOL_LOGICAL_NEGATION, cur_tok) != 0) {
+            if (tokenlist_append(tokenlist, TOKEN_SYMBOL_UNARY_OP, cur_tok) != 0) {
                 safestring_destroy(&cur_tok);
                 tokenlist_destroy(&tokenlist);
                 return NULL;

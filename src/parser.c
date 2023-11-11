@@ -124,9 +124,12 @@ struct ASTNode* parse_expression(struct TokenList* tokens) {
             astnode_append_child(expression_node, expression_child_node);
             break;
 
+        /*
         case TOKEN_SYMBOL_NEGATION:
         case TOKEN_SYMBOL_BITWISE_COMPLEMENT:
         case TOKEN_SYMBOL_LOGICAL_NEGATION:
+        */
+        case TOKEN_SYMBOL_UNARY_OP:
             if (!(expression_child_node = parse_unary_op(tokens))) { 
                 printf("Error parsing unary op.\n");
                 return NULL; 

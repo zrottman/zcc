@@ -12,9 +12,12 @@ struct {
     { TOKEN_SYMBOL_OPENPAREN,          "(",      "symbols: ("      },
     { TOKEN_SYMBOL_CLOSEPAREN,         ")",      "symbols: )"      },
     { TOKEN_SYMBOL_SEMICOLON,          ";",      "symbols: ;"      },
+    /*
     { TOKEN_SYMBOL_NEGATION,           "-",      "symbols: -"      },
     { TOKEN_SYMBOL_BITWISE_COMPLEMENT, "~",      "symbols: ~"      },
-    { TOKEN_SYMBOL_LOGICAL_NEGATION,   "~",      "symbols: !"      },
+    { TOKEN_SYMBOL_LOGICAL_NEGATION,   "!",      "symbols: !"      },
+    */
+    { TOKEN_SYMBOL_UNARY_OP,           "~|-|!",  "unary op"        },
 
     // Keywords
     { TOKEN_KEYWORD_RETURN,            "return", "keyword: return" },
